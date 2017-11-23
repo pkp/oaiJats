@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE locale SYSTEM "../../../../../lib/pkp/dtd/locale.dtd">
+<!--
+  * locale/es_ES/locale.xml
+  *
+  * Copyright (c) 2013-2017 Simon Fraser University Library
+  * Copyright (c) 2003-2017 John Willinsky
+  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
+  *
+  * Credits: https://pkp.sfu.ca/wiki/index.php?title=OJS:_Spanish_(es_ES)
+  *
+  * Localization strings
+  -->
+
+<locale name="es_ES" full_name="Español (España)">
+
+<locale name="en_US" full_name="U.S. English">
+	<message key="plugins.oaiMetadata.jats.displayName">Metadatos en formato JATS</message>
+	<message key="plugins.oaiMetadata.jats.description">Estructura los metadatos de manera que sean consistentes con el formato XML de JATS.</message>
+	<message key="plugins.oaiMetadata.jats.description.noxsl"><![CDATA[Estructura los metadatos de manera que sean consistentes con el formato XML de JATS. <strong>AVISO: Este módulo requiere soporte XSL y actualmente no está presente en su sistema.</strong>]]></message>
+</locale>
