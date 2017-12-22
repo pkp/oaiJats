@@ -19,7 +19,6 @@
  */
 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
-
 	/**
 	 * @copydoc OAIMetadataFormat#toXml
 	 */
@@ -49,7 +48,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// If no candidate files were located, return the null XML.
-		if (empty($candidateFiles)) return $this->_getNullXml();
+		if (empty($candidateFiles)) {
+			$oaiDao = DAORegistry::getDAO('OAIDAO');
+			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
+		}
 
 		if (count($candidateFiles) > 1) error_log('WARNING: More than one JATS XML candidate documents were located for submission ' . $article->getId() . '.');
 
@@ -94,17 +96,13 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Transform the article
 		$returner = $xslTransform->transformToDoc($doc);
-		if ($returner === false) return $this->_getNullXml();
+		if ($returner === false) {
+			$oaiDao = DAORegistry::getDAO('OAIDAO');
+			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (transformation unsuccessful)');
+			return false;
+		}
 		$articleNode = $returner->getElementsByTagName('article')->item(0);
 		return $returner->saveXml($articleNode);
-	}
-
-	/**
-	 * Return the XML for a "null" article (i.e. the minimum required XML for when something better isn't available)
-	 * @return string
-	 */
-	protected function _getNullXml() {
-		return '<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" article-type="research-article" dtd-version="1.1d1" xml:lang="en"></article>';
 	}
 
 	/**
