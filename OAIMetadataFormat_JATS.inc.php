@@ -23,6 +23,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 * @copydoc OAIMetadataFormat#toXml
 	 */
 	function toXml($record, $format = null) {
+		$journal = $record->getData('journal');
 		$article = $record->getData('article');
 		$galleys = $record->getData('galleys');
 		$issue = $record->getData('issue');
@@ -81,7 +82,18 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$xslTransform->setParameter('', 'copyrightHolder', $article->getLocalizedCopyrightHolder($article->getLocale()));
 		$xslTransform->setParameter('', 'copyrightYear', $article->getCopyrightYear());
 		$xslTransform->setParameter('', 'licenseUrl', $article->getLicenseURL());
+		$xslTransform->setParameter('', 'language', substr($article->getLocale(),0,2));
 		$xslTransform->setParameter('', 'isUnpublishedXml', $candidateFile->getFileStage()==SUBMISSION_FILE_PRODUCTION_READY?1:0);
+		$xslTransform->setParameter('', 'sectionTitle', $article->getSectionTitle());
+		$xslTransform->setParameter('', 'journalPath', $journal->getPath());
+		$xslTransform->setParameter('', 'journalPath', $journal->getPath());
+
+		// Determine the article's sequence in the issue
+		$publishedArticleDao = DAORegistry::getDAO('PublishedArticleDAO');
+		$articleIds = array_map(function($publishedArticle) {
+			return $publishedArticle->getId();
+		}, $publishedArticleDao->getPublishedArticles($issue->getId()));
+		$xslTransform->setParameter('', 'articleSeq', (int) array_search($article->getId(), $articleIds));
 
 		static $purifier;
 		if (!$purifier) {

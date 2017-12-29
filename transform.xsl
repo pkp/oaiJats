@@ -22,7 +22,11 @@
 	<xsl:param name="copyrightHolder"/><!-- The copyright holder (for the submission's primary locale) -->
 	<xsl:param name="copyrightYear"/><!-- The copyright year -->
 	<xsl:param name="licenseUrl"/><!-- The license URL -->
+	<xsl:param name="language"/><!-- Article language -->
 	<xsl:param name="isUnpublishedXml"/><!-- Whether or not this XML document is published (e.g. via Lens Reader); 1 or 0 -->
+	<xsl:param name="sectionTitle"/><!-- Section title -->
+	<xsl:param name="journalPath"/><!-- Journal path -->
+	<xsl:param name="articleSeq"/><!-- Article sequence in issue -->
 
 	<!--
 	  - Identity transform
@@ -34,6 +38,34 @@
 		</xsl:copy>
 	</xsl:template>
 
+	<!-- Article language (override supplied value) -->
+	<xsl:template match="article/@lang">
+		<xsl:attribute name="xml:lang"><xsl:value-of select="$language"/></xsl:attribute>
+	</xsl:template>
+
+	<!-- Article language (provide a value when the XML doesn't contain it) -->
+	<xsl:template match="article">
+		<xsl:copy>
+			<xsl:attribute name="xml:lang"><xsl:value-of select="$language"/></xsl:attribute>
+			<xsl:apply-templates select="@*|node()"/>
+		</xsl:copy>
+	</xsl:template>
+
+	<!-- Article sequence (provided to both volume and number elements) -->
+	<xsl:template match="volume">
+		<xsl:copy>
+			<xsl:attribute name="seq"><xsl:value-of select="$articleSeq"/></xsl:attribute>
+			<xsl:apply-templates select="@*|node()"/>
+		</xsl:copy>
+	</xsl:template>
+	<xsl:template match="number">
+		<xsl:copy>
+			<xsl:attribute name="seq"><xsl:value-of select="$articleSeq"/></xsl:attribute>
+			<xsl:apply-templates select="@*|node()"/>
+		</xsl:copy>
+	</xsl:template>
+
+	<!-- Article metadata -->
 	<xsl:template match="article-meta">
 		<xsl:call-template name="doi-check"/>
 		<xsl:call-template name="abstract-check"/>
@@ -112,7 +144,7 @@
 	<!--
 	  - Article abstract
 	  -->
-	<!-- Add an abstract element when none exists --><!-- match="article-meta[not(abstract)]" -->
+	<!-- Add an abstract element when none exists -->
 	<xsl:template name="abstract-check">
 		<xsl:if test="not(abstract)">
 			<abstract><xsl:value-of select="$abstract" disable-output-escaping="yes"/></abstract>
@@ -123,5 +155,15 @@
 		<abstract>
 			<xsl:value-of select="$abstract" disable-output-escaping="yes"/>
 		</abstract>
+	</xsl:template>
+
+	<!--
+	  - Journal ID check
+	  -->
+	<!-- Update an element when one does exist -->
+	<xsl:template match="journal-meta/journal-id[@journal-id-type='publisher-id']">
+		<journal-id type="publisher-id">
+			<xsl:value-of select="$journalPath"/>
+		</journal-id>
 	</xsl:template>
 </xsl:stylesheet>
