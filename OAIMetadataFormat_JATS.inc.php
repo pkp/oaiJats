@@ -158,6 +158,22 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			}
 		}
 
+		// Section information
+		$match = $xpath->query("//article/front/article-meta/article-categories");
+		if ($match->length) $articleCategoriesNode = $match->item(0);
+		else {
+			$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
+			$articleCategoriesNode = $articleMetaNode->appendChild($doc->createElement('article-categories'));
+		}
+		$match = $xpath->query('//article/front/article-meta/subj-group[@subj-group-type="heading"]');
+		if ($match->length) $subjGroupNode = $match->item(0);
+		else {
+			$subjGroupNode = $articleCategoriesNode->appendChild($doc->createElement('subj-group-type'));
+			$subjGroupNode->setAttribute('subj-group-type', 'heading');
+		}
+		$subjectNode = $subjGroupNode->appendChild($doc->createElement('subject'));
+		$subjectNode->nodeValue = $section->getTitle($journal->getPrimaryLocale());
+
 		// Article sequence information
 		$publishedArticleDao = DAORegistry::getDAO('PublishedArticleDAO');
 		$articleIds = array_map(function($publishedArticle) {
