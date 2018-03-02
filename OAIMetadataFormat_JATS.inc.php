@@ -69,7 +69,50 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$doc = new DOMDocument;
 		$doc->loadXML(file_get_contents($candidateFile->getFilePath()));
 
+		$this->_mungeMetadata($doc, $journal, $article, $section, $issue);
+
+		return $doc->saveXml($doc->getElementsByTagName('article')->item(0));
+	}
+
+	/**
+	 * Add the child node to the parent node in the appropriate node order.
+	 * @param $parentNode DOMNode The parent element.
+	 * @param $childNode DOMNode The child node.
+	 * @return DOMNode The child node.
+	 */
+	protected function _addChildInOrder($parentNode, $childNode) {
+		$permittedElementOrders = array(
+			'article-meta' => array('article-id', 'article-categories', 'title-group', 'contrib-group', 'aff', 'aff-alternatives', 'x', 'author-notes', 'pub-date', 'volume', 'volume-id', 'volume-series', 'issue', 'issue-id', 'issue-title', 'issue-sponsor', 'issue-part', 'isbn', 'supplement', 'fpage', 'lpage', 'page-range', 'elocation-id', 'email', 'ext-link', 'uri', 'product', 'supplementary-material', 'history', 'permissions', 'self-uri', 'related-article', 'related-object', 'abstract', 'trans-abstract', 'kwd-group', 'funding-group', 'conference', 'counts', 'custom-meta-group'),
+			'journal-meta' => array('journal-id', 'journal-title-group', 'contrib-group', 'aff', 'aff-alternatives', 'issn', 'issn-l', 'isbn', 'publisher', 'notes', 'self-uri', 'custom-meta-group'),
+		);
+		assert(isset($permittedElementOrders[$parentNode->nodeName])); // We have an order list for the parent node
+		$order = $permittedElementOrders[$parentNode->nodeName];
+		$position = array_search($childNode->nodeName, $order);
+		assert($position !== false); // The child node appears in the order list
+
+		$followingElements = array_slice($order, $position);
+		$followingElement = null;
+		foreach ($parentNode->childNodes as $node) {
+			if (in_array($node->nodeName, $followingElements)) {
+				$followingElement = $node;
+				break;
+			}
+		}
+
+		return $parentNode->insertBefore($childNode, $followingElement);
+	}
+
+	/**
+	 * Override elements of the JATS XML with aspects of the OJS article's metadata.
+	 * @param $doc DOMDocument
+	 * @param $journal Journal
+	 * @param $article Article
+	 * @param $section Section
+	 * @param $issue Issue
+	 */
+	protected function _mungeMetadata($doc, $journal, $article, $section, $issue) {
 		$xpath = new DOMXPath($doc);
+		$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
 
 		// Set the article language.
 		$xpath->query('//article')->item(0)->setAttribute('xml:lang', substr($article->getLocale(),0,2));
@@ -84,8 +127,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				while ($dateNode->hasChildNodes()) $dateNode->removeChild($dateNode->firstChild);
 			} else {
 				// No pub-date was found; create a new one.
-				$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
-				$dateNode = $articleMetaNode->appendChild($doc->createElement('pub-date'));
+				$dateNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('pub-date'));
 				$dateNode->setAttribute('pub-type', 'pub');
 				$dateNode->setAttribute('publication-format', 'print');
 			}
@@ -112,10 +154,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$config->set('Cache.SerializerPath', 'cache');
 			$purifier = new HTMLPurifier($config);
 		}
-		$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
 		foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) $articleMetaNode->removeChild($abstractNode);
 		foreach ((array) $article->getAbstract(null) as $locale => $abstract) {
-			$abstractNode = $articleMetaNode->appendChild($doc->createElement('abstract'));
+			$abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('abstract'));
 			$abstractNode->setAttribute('xml:lang', substr($locale,0,2));
 			$abstractNode->nodeValue = $purifier->purify($abstract);
 		}
@@ -125,7 +166,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		if ($match->length) $match->item(0)->nodeValue = $journal->getPath();
 		else {
 			$journalMetaNode = $xpath->query('//article/front/journal-meta')->item(0);
-			$journalIdNode = $journalMetaNode->appendChild($doc->createElement('journal-id'));
+			$journalIdNode = $this->_addChildInOrder($journalMetaNode, $doc->createElement('journal-id'));
 			$journalIdNode->setAttribute('journal-id-type', 'publisher-id');
 			$journalIdNode->nodeValue = $journal->getPath();
 		}
@@ -135,8 +176,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$match = $xpath->query("//article/front/article-meta/article-id[@pub-id-type='doi']");
 			if ($match->length) $match->item(0)->nodeValue = $doi;
 			else {
-				$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
-				$articleIdNode = $articleMetaNode->appendChild($doc->createElement('article-id'));
+				$articleIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('article-id'));
 				$articleIdNode->setAttribute('pub-id-type', 'doi');
 				$articleIdNode->nodeValue = $doi;
 			}
@@ -148,8 +188,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$copyrightYear = $article->getCopyrightYear();
 		$licenseUrl = $article->getLicenseURL();
 		if (!$match->length && ($copyrightHolder || $copyrightYear || $licenseUrl)) {
-			$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
-			$permissionsNode = $articleMetaNode->appendChild($doc->createElement('permissions'));
+			$permissionsNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('permissions'));
 			if ($copyrightYear) $permissionsNode->appendChild($doc->createElement('copyright-year'))->nodeValue = $copyrightYear;
 			if ($copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-holder'))->nodeValue = $copyrightHolder;
 			if ($licenseUrl) {
@@ -162,13 +201,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$match = $xpath->query("//article/front/article-meta/article-categories");
 		if ($match->length) $articleCategoriesNode = $match->item(0);
 		else {
-			$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
-			$articleCategoriesNode = $articleMetaNode->appendChild($doc->createElement('article-categories'));
+			$articleCategoriesNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('article-categories'));
 		}
 		$match = $xpath->query('//article/front/article-meta/subj-group[@subj-group-type="heading"]');
 		if ($match->length) $subjGroupNode = $match->item(0);
 		else {
-			$subjGroupNode = $articleCategoriesNode->appendChild($doc->createElement('subj-group-type'));
+			$subjGroupNode = $articleCategoriesNode->appendChild($doc->createElement('subj-group'));
 			$subjGroupNode->setAttribute('subj-group-type', 'heading');
 		}
 		$subjectNode = $subjGroupNode->appendChild($doc->createElement('subject'));
@@ -188,27 +226,21 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$match = $xpath->query("//article/front/article-meta/issue-id");
 		if ($match->length) $match->item(0)->nodeValue = $issue->getId();
 		else {
-			$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
-			$issueIdNode = $articleMetaNode->appendChild($doc->createElement('issue-id'));
+			$issueIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-id'));
 			$issueIdNode->nodeValue = $issue->getId();
 		}
 
 		// Article type
 		if ($articleType = trim($section->getLocalizedIdentifyType())) {
-			$match = $xpath->query("//article/article-type");
-			if ($match->length) $match->item(0)->nodeValue = $articleType;
-			else {
-				$articleNode = $xpath->query('//article')->item(0);
-				$articleTypeNode = $articleNode->appendChild($doc->createElement('article-type'));
-				$articleTypeNode->nodeValue = $articleType;
-			}
+			$articleNode = $xpath->query("//article")->item(0);
+			$articleNode->setAttribute('article-type', $articleType);
 		}
 
 		// Editorial team
 		$userGroupDao = DAORegistry::getDAO('UserGroupDAO');
 		$userGroups = $userGroupDao->getByContextId($journal->getId());
 		$journalMetaNode = $xpath->query('//article/front/journal-meta')->item(0);
-		$contribGroupNode = $journalMetaNode->appendChild($doc->createElement('contrib-group'));
+		$contribGroupNode = $this->_addChildInOrder($journalMetaNode, $doc->createElement('contrib-group'));
 		$keyContribTypeMapping = array(
 			'default.groups.name.manager' => 'jmanager',
 			'default.groups.name.editor' => 'editor',
@@ -230,7 +262,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			}
 		}
 
-		return $doc->saveXml($doc->getElementsByTagName('article')->item(0));
 	}
 
 	/**
