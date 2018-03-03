@@ -256,7 +256,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$nameNode = $contribNode->appendChild($doc->createElement('name'));
 				$surnameNode = $nameNode->appendChild($doc->createElement('surname'));
 				$surnameNode->nodeValue = $user->getLastName();
-				$givenNamesNode = $contribNode->appendChild($doc->createElement('given-names'));
+				$givenNamesNode = $nameNode->appendChild($doc->createElement('given-names'));
 				$givenNamesNode->nodeValue = $user->getFirstName();
 				if ($s = $user->getMiddleName()) $givenNamesNode->nodeValue .= " $s";
 			}
