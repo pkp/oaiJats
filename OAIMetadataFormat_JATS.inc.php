@@ -113,11 +113,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	protected function _mungeMetadata($doc, $journal, $article, $section, $issue) {
 		$xpath = new DOMXPath($doc);
 		$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
+		$request = Application::getRequest();
 
 		// Set the article language.
 		$xpath->query('//article')->item(0)->setAttribute('xml:lang', substr($article->getLocale(),0,2));
 
-		// Set the publication date.
+		// Set the article publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
 		if ($datePublished = $article->getDatePublished()) {
 			$datePublished = strtotime($datePublished);
 			$match = $xpath->query("//article/front/article-meta/pub-date[@date-type='pub' and publication-format='epub']");
@@ -131,11 +132,76 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$dateNode->setAttribute('date-type', 'pub');
 				$dateNode->setAttribute('publication-format', 'epub');
 			}
+
 			$dateNode->setAttribute('iso-8601-date', strftime('%Y-%m-%d', $datePublished));
 			$dateNode->appendChild($doc->createElement('day'))->nodeValue = strftime('%d', $datePublished);
 			$dateNode->appendChild($doc->createElement('month'))->nodeValue = strftime('%m', $datePublished);
 			$dateNode->appendChild($doc->createElement('year'))->nodeValue = strftime('%Y', $datePublished);
 		}
+
+		// Set the issue publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
+		$issueYear = null;
+		if ($issue && $issue->getShowYear()) $issueYear = $issue->getYear();
+		if (!$issueYear && $issue && $issue->getDatePublished()) $issueYear = strftime('%Y', $issue->getDatePublished());
+		if (!$issueYear && $datePublished) $issueYear = strftime('%Y', $datePublished);
+		if ($issueYear) {
+			$match = $xpath->query("//article/front/article-meta/pub-date[@date-type='issue' and publication-format='epub']");
+			if ($match->length) {
+				// An existing pub-date was found; empty and re-use.
+				$dateNode = $match->item(0);
+				while ($dateNode->hasChildNodes()) $dateNode->removeChild($dateNode->firstChild);
+			} else {
+				// No pub-date was found; create a new one.
+				$dateNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('pub-date'));
+				$dateNode->setAttribute('date-type', 'issue');
+				$dateNode->setAttribute('publication-format', 'epub');
+			}
+			if ($issue && $issue->getDatePublished()) {
+				$issueDatePublished = $issue->getDatePublished();
+				$dateNode->setAttribute('iso-8601-date', strftime('%Y-%m-%d', $issueDatePublished));
+				$dateNode->appendChild($doc->createElement('day'))->nodeValue = strftime('%d', $issueDatePublished);
+				$dateNode->appendChild($doc->createElement('month'))->nodeValue = strftime('%m', $issueDatePublished);
+				$dateNode->appendChild($doc->createElement('year'))->nodeValue = strftime('%Y', $issueDatePublished);
+			} else {
+				$dateNode->appendChild($doc->createElement('year'))->nodeValue = strftime('%Y', $issueYear);
+			}
+		}
+
+		// Set the article URLs: Landing page
+		$uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
+		$uriNode->nodeValue = $request->url(null, 'article', 'view', $article->getBestArticleId());
+
+		// Set the article URLs: Galleys
+		foreach ($article->getGalleys() as $galley) {
+			$uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
+			$uriNode->nodeValue = $request->url(null, 'article', 'view', $article->getBestArticleId());
+			$uriNode->setAttribute('content-type', $galley->getFileType());
+		}
+
+		// Set the issue volume (if applicable).
+		if ($issue && $issue->getShowVolume()) {
+			$match = $xpath->query('//article/front/article-meta/volume');
+			if ($match->length) $volumeNode = $match->item(0);
+			else $volumeNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('volume'));
+			$volumeNode->nodeValue = $issue->getVolume();
+		}
+
+		// Set the issue number (if applicable).
+		if ($issue && $issue->getShowNumber()) {
+			$match = $xpath->query('//article/front/article-meta/number');
+			if ($match->length) $numberNode = $match->item(0);
+			else $numberNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('number'));
+			$numberNode->nodeValue = $issue->getNumber();
+		}
+
+		// Set the issue title (if applicable).
+		if ($issue && $issue->getShowTitle()) {
+			$match = $xpath->query('//article/front/article-meta/issue-title');
+			if ($match->length) $titleNode = $match->item(0);
+			else $titleNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-title'));
+			$titleNode->nodeValue = $issue->getTitle($journal->getPrimaryLocale());
+		}
+
 
 		// Set the article title.
 		$titleGroupNode = $xpath->query('//article/front/article-meta/title-group')->item(0);
