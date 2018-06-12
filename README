@@ -37,3 +37,8 @@ This plugin is known to work with...
 Installation
 ------------
 This plugin should be available from the Plugin Gallery within OJS.
+
+Configuration
+-------------
+We recommend that the following configuration elements be set in OJS...
+ - ISSN
