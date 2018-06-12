@@ -26,10 +26,16 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 		return 'OAIMetadataFormatPlugin_JATS';
 	}
 
+	/**
+	 * @copydoc Plugin::getDisplayName()
+	 */
 	function getDisplayName() {
 		return __('plugins.oaiMetadata.jats.displayName');
 	}
 
+	/**
+	 * @copydoc Plugin::getDescription()
+	 */
 	function getDescription() {
 		return __($this->getCanEnable()?'plugins.oaiMetadata.jats.description':'plugins.oaiMetadata.jats.description.noxsl');
 	}
