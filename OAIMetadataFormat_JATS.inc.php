@@ -20,24 +20,12 @@
 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
-	 * @copydoc OAIMetadataFormat#toXml
+	 * Identify a candidate JATS file to expose via OAI.
+	 * @param $article Article
+	 * @param $galleys array
+	 * @return DOMDocument|null
 	 */
-	function toXml($record, $format = null) {
-		$oaiDao = DAORegistry::getDAO('OAIDAO');
-		$journal = $record->getData('journal');
-		$article = $record->getData('article');
-		$galleys = $record->getData('galleys');
-		$section = $record->getData('section');
-		$issue = $record->getData('issue');
-
-		// Check access
-		import('classes.issue.IssueAction');
-		$subscriptionRequired = IssueAction::subscriptionRequired($issue, $journal);
-		$isSubscribedDomain = IssueAction::subscribedDomain(Application::getRequest(), $journal, $issue->getId(), $article->getId());
-		if ($subscriptionRequired && !$subscriptionRequired) {
-			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
-		}
-
+	protected function _findJats($article, $galleys) {
 		import('lib.pkp.classes.submission.SubmissionFile'); // SUBMISSION_FILE_... constants
 		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
 		$candidateFiles = array();
@@ -58,16 +46,48 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			}
 		}
 
+		$doc = null;
+		HookRegistry::call('OAIMetadataFormat_JATS::findJats', array(&$this, &$candidateFiles, &$doc));
+
 		// If no candidate files were located, return the null XML.
-		if (empty($candidateFiles)) {
-			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
+		if (!$doc && empty($candidateFiles)) {
+			return null;
 		}
 		if (count($candidateFiles) > 1) error_log('WARNING: More than one JATS XML candidate documents were located for submission ' . $article->getId() . '.');
 
 		// Fetch the XML document
-		$candidateFile = array_shift($candidateFiles);
-		$doc = new DOMDocument;
-		$doc->loadXML(file_get_contents($candidateFile->getFilePath()));
+		if (!$doc) {
+			$candidateFile = array_shift($candidateFiles);
+			$doc = new DOMDocument;
+			$doc->loadXML(file_get_contents($candidateFile->getFilePath()));
+		}
+
+		return $doc;
+	}
+
+	/**
+	 * @copydoc OAIMetadataFormat#toXml
+	 */
+	function toXml($record, $format = null) {
+		$oaiDao = DAORegistry::getDAO('OAIDAO');
+		$journal = $record->getData('journal');
+		$article = $record->getData('article');
+		$galleys = $record->getData('galleys');
+		$section = $record->getData('section');
+		$issue = $record->getData('issue');
+
+		// Check access
+		import('classes.issue.IssueAction');
+		$subscriptionRequired = IssueAction::subscriptionRequired($issue, $journal);
+		$isSubscribedDomain = IssueAction::subscribedDomain(Application::getRequest(), $journal, $issue->getId(), $article->getId());
+		if ($subscriptionRequired && !$subscriptionRequired) {
+			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
+		}
+
+		$doc = $this->_findJats($article, $galleys);
+		if (!$doc) {
+			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
+		}
 
 		$this->_mungeMetadata($doc, $journal, $article, $section, $issue);
 
@@ -113,6 +133,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	protected function _mungeMetadata($doc, $journal, $article, $section, $issue) {
 		$xpath = new DOMXPath($doc);
 		$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
+		$journalMetaNode = $xpath->query('//article/front/journal-meta')->item(0);
+		if (!$journalMetaNode) {
+			$frontNode = $xpath->query('//article/front')->item(0);
+			$journalMetaNode = $this->_addChildInOrder($frontNode, $doc->createElement('journal-meta'));
+		}
+
 		$request = Application::getRequest();
 
 		$articleNode = $xpath->query('//article')->item(0);
@@ -232,7 +258,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$match = $xpath->query("//article/front/journal-meta/journal-id[@journal-id-type='publisher-id']");
 		if ($match->length) $match->item(0)->nodeValue = $journal->getPath();
 		else {
-			$journalMetaNode = $xpath->query('//article/front/journal-meta')->item(0);
 			$journalIdNode = $this->_addChildInOrder($journalMetaNode, $doc->createElement('journal-id'));
 			$journalIdNode->setAttribute('journal-id-type', 'publisher-id');
 			$journalIdNode->nodeValue = $journal->getPath();
@@ -322,10 +347,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$contribNode->setAttribute('contrib-type', $keyContribTypeMapping[$userGroup->getData('nameLocaleKey')]);
 				$nameNode = $contribNode->appendChild($doc->createElement('name'));
 				$surnameNode = $nameNode->appendChild($doc->createElement('surname'));
-				$surnameNode->nodeValue = $user->getLastName();
+				$surnameNode->nodeValue = method_exists($user, 'getLastName')?$user->getLastName():$user->getLocalizedFamilyName();
 				$givenNamesNode = $nameNode->appendChild($doc->createElement('given-names'));
-				$givenNamesNode->nodeValue = $user->getFirstName();
-				if ($s = $user->getMiddleName()) $givenNamesNode->nodeValue .= " $s";
+				$givenNamesNode->nodeValue = method_exists($user, 'getFirstName')?$user->getFirstName():$user->getLocalizedGivenName();
+				if (method_exists($user, 'getMiddleName') && $s = $user->getMiddleName()) $givenNamesNode->nodeValue .= " $s";
 			}
 		}
 
