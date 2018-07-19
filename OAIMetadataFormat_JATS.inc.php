@@ -102,6 +102,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 */
 	protected function _addChildInOrder($parentNode, $childNode) {
 		$permittedElementOrders = array(
+			'front' => array('article-meta', 'journal-meta'),
 			'article-meta' => array('article-id', 'article-categories', 'title-group', 'contrib-group', 'aff', 'aff-alternatives', 'x', 'author-notes', 'pub-date', 'volume', 'volume-id', 'volume-series', 'issue', 'issue-id', 'issue-title', 'issue-sponsor', 'issue-part', 'isbn', 'supplement', 'fpage', 'lpage', 'page-range', 'elocation-id', 'email', 'ext-link', 'uri', 'product', 'supplementary-material', 'history', 'permissions', 'self-uri', 'related-article', 'related-object', 'abstract', 'trans-abstract', 'kwd-group', 'funding-group', 'conference', 'counts', 'custom-meta-group'),
 			'journal-meta' => array('journal-id', 'journal-title-group', 'contrib-group', 'aff', 'aff-alternatives', 'issn', 'issn-l', 'isbn', 'publisher', 'notes', 'self-uri', 'custom-meta-group'),
 		);
@@ -184,7 +185,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$dateNode->setAttribute('publication-format', 'epub');
 			}
 			if ($issue && $issue->getDatePublished()) {
-				$issueDatePublished = $issue->getDatePublished();
+				$issueDatePublished = strtotime($issue->getDatePublished());
 				$dateNode->setAttribute('iso-8601-date', strftime('%Y-%m-%d', $issueDatePublished));
 				$dateNode->appendChild($doc->createElement('day'))->nodeValue = strftime('%d', $issueDatePublished);
 				$dateNode->appendChild($doc->createElement('month'))->nodeValue = strftime('%m', $issueDatePublished);
@@ -215,9 +216,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Set the issue number (if applicable).
 		if ($issue && $issue->getShowNumber()) {
-			$match = $xpath->query('//article/front/article-meta/number');
+			$match = $xpath->query('//article/front/article-meta/issue');
 			if ($match->length) $numberNode = $match->item(0);
-			else $numberNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('number'));
+			else $numberNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue'));
 			$numberNode->nodeValue = $issue->getNumber();
 		}
 
