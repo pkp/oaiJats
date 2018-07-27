@@ -25,7 +25,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 * @param $galleys array
 	 * @return DOMDocument|null
 	 */
-	protected function _findJats($article, $galleys) {
+	protected function _findJats($record) {
+		$article = $record->getData('article');
+		$galleys = $record->getData('galleys');
+
 		import('lib.pkp.classes.submission.SubmissionFile'); // SUBMISSION_FILE_... constants
 		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
 		$candidateFiles = array();
@@ -47,7 +50,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		$doc = null;
-		HookRegistry::call('OAIMetadataFormat_JATS::findJats', array(&$this, &$candidateFiles, &$doc));
+		HookRegistry::call('OAIMetadataFormat_JATS::findJats', array(&$this, &$record, &$candidateFiles, &$doc));
 
 		// If no candidate files were located, return the null XML.
 		if (!$doc && empty($candidateFiles)) {
@@ -85,12 +88,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			exit();
 		}
 
-		$doc = $this->_findJats($article, $galleys);
+		$doc = $this->_findJats($record);
 		if (!$doc) {
 			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
 			exit();
 		}
-
 		$this->_mungeMetadata($doc, $journal, $article, $section, $issue);
 
 		return $doc->saveXml($doc->getElementsByTagName('article')->item(0));
