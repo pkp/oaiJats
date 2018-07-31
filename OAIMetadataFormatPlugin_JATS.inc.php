@@ -37,15 +37,7 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	 * @copydoc Plugin::getDescription()
 	 */
 	function getDescription() {
-		return __($this->getCanEnable()?'plugins.oaiMetadata.jats.description':'plugins.oaiMetadata.jats.description.noxsl');
-	}
-
-	/**
-	 * Determine whether the plugin can be enabled.
-	 * @return boolean
-	 */
-	function getCanEnable() {
-		return class_exists('XSLTProcessor');
+		return 'plugins.oaiMetadata.jats.description';
 	}
 
 	/**

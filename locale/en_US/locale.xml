@@ -14,5 +14,4 @@
 <locale name="en_US" full_name="U.S. English">
 	<message key="plugins.oaiMetadata.jats.displayName">JATS Metadata Format</message>
 	<message key="plugins.oaiMetadata.jats.description">Structures metadata in a way that is consistent with the JATS XML format.</message>
-	<message key="plugins.oaiMetadata.jats.description.noxsl"><![CDATA[Structures metadata in a way that is consistent with the JATS XML format. <strong>WARNING: This plugin requires XSL support, which is currently not present on your system.</strong>]]></message>
 </locale>
