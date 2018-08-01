@@ -232,6 +232,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			if ($match->length) $titleNode = $match->item(0);
 			else $titleNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-title'));
 			$titleNode->nodeValue = $issue->getTitle($journal->getPrimaryLocale());
+			$titleNode->setAttribute('xml:lang', substr($journal->getPrimaryLocale(),0,2));
 		}
 
 
@@ -260,11 +261,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Set the journal-id[publisher-id']
-		$match = $xpath->query("//article/front/journal-meta/journal-id[@journal-id-type='publisher-id']");
+		$match = $xpath->query("//article/front/journal-meta/journal-id[@journal-id-type='publisher']");
 		if ($match->length) $match->item(0)->nodeValue = $journal->getPath();
 		else {
 			$journalIdNode = $this->_addChildInOrder($journalMetaNode, $doc->createElement('journal-id'));
-			$journalIdNode->setAttribute('journal-id-type', 'publisher-id');
+			$journalIdNode->setAttribute('journal-id-type', 'publisher');
 			$journalIdNode->nodeValue = $journal->getPath();
 		}
 
