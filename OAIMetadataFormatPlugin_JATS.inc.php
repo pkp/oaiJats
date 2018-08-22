@@ -37,7 +37,7 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	 * @copydoc Plugin::getDescription()
 	 */
 	function getDescription() {
-		return 'plugins.oaiMetadata.jats.description';
+		return __('plugins.oaiMetadata.jats.description');
 	}
 
 	/**
@@ -45,6 +45,14 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	 * @return boolean
 	 */
 	function getCanDisable() {
+		return true;
+	}
+
+	/**
+	 * Determine whether the plugin can be enabled.
+	 * @return boolean
+	 */
+	function getCanEnable() {
 		return true;
 	}
 
