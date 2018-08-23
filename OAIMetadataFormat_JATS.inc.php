@@ -329,6 +329,23 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$issueIdNode->nodeValue = $issue->getId();
 		}
 
+		// Issue cover page
+		if ($coverUrl = $issue->getLocalizedCoverImageUrl()) {
+			$customMetaGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('custom-meta-group'));
+			$metaNameNode = $customMetaGroupNode->appendChild($doc->createElement('meta-name'));
+			$metaNameNode->nodeValue = 'issue-cover';
+			$metaValueNode = $customMetaGroupNode->appendChild($doc->createElement('meta-value'));
+			$inlineGraphicNode = $metaValueNode->appendChild($doc->createElement('inline-graphic'));
+			$inlineGraphicNode->setAttribute('xlink:href', $coverUrl);
+
+			$match = $xpath->query("//article/front/article-meta/counts");
+			if ($match->length) $match->item(0)->nodeValue++;
+			else {
+				$countsNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('counts'));
+				$countsNode->nodeValue = 1;
+			}
+		}
+
 		// Article type
 		if ($articleType = trim($section->getLocalizedIdentifyType())) {
 			$articleNode = $xpath->query("//article")->item(0);
