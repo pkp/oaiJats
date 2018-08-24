@@ -9,6 +9,8 @@ This plugin exposes JATS XML via the OAI-PMH interface.
 Note that it DOES NOT generate JATS XML itself -- it assumes that this will
 already be available. You can use a tool like Open Typesetting Stack
 (https://pkp.sfu.ca/open-typesetting-stack/) to generate the JATS XML.
+The JATS Template plugin (https://github.com/asmecher/jatsTemplate) can also
+be used to generate simple JATS documents as a fallback.
 
 Once this plugin is enabled, it will look for JATS XML both in the Galleys
 (for published content) and Production Ready (for unpublished content) areas.
@@ -27,12 +29,9 @@ This software is published under the GNU GPLv2 license. See LICENSE for details.
 
 System Requirements
 -------------------
-This plugin is known to work with...
- - OJS 3.0.0
- - OJS 3.0.1
- - OJS 3.0.2
+This plugin is intended to work with...
  - OJS 3.1.0
-
+ - OJS 3.1.1 (all builds)
 
 Installation
 ------------
