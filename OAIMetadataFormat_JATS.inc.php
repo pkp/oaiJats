@@ -320,9 +320,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		else {
 			$articleCategoriesNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('article-categories'));
 		}
-		$match = $xpath->query('//article/front/article-meta/subj-group[@subj-group-type="heading"]');
-		if ($match->length) $subjGroupNode = $match->item(0);
-		else {
+		$match = $xpath->query('//article/front/article-meta/article-categories/subj-group[@subj-group-type="heading"]');
+		if ($match->length) {
+			$subjGroupNode = $match->item(0);
+			while ($subjGroupNode->hasChildNodes()) $subjGroupNode->removeChild($subjGroupNode->firstChild);
+		} else {
 			$subjGroupNode = $articleCategoriesNode->appendChild($doc->createElement('subj-group'));
 			$subjGroupNode->setAttribute('subj-group-type', 'heading');
 		}
