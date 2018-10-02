@@ -154,7 +154,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Set the article publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
 		if ($datePublished = $article->getDatePublished()) {
 			$datePublished = strtotime($datePublished);
-			$match = $xpath->query("//article/front/article-meta/pub-date[@date-type='pub' and publication-format='epub']");
+			$match = $xpath->query("//article/front/article-meta/pub-date[@date-type='pub' and @publication-format='epub']");
 			if ($match->length) {
 				// An existing pub-date was found; empty and re-use.
 				$dateNode = $match->item(0);
