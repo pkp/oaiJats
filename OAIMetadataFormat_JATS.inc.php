@@ -175,7 +175,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Set the issue publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
 		$issueYear = null;
 		if ($issue && $issue->getShowYear()) $issueYear = $issue->getYear();
-		if (!$issueYear && $issue && $issue->getDatePublished()) $issueYear = strftime('%Y', $issue->getDatePublished());
+		if (!$issueYear && $issue && $issue->getDatePublished()) $issueYear = strftime('%Y', strtotime($issue->getDatePublished()));
 		if (!$issueYear && $datePublished) $issueYear = strftime('%Y', $datePublished);
 		if ($issueYear) {
 			$match = $xpath->query("//article/front/article-meta/pub-date[@date-type='issue' and publication-format='epub']");
@@ -187,17 +187,8 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				// No pub-date was found; create a new one.
 				$dateNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('pub-date'));
 				$dateNode->setAttribute('date-type', 'issue');
-				$dateNode->setAttribute('publication-format', 'epub');
 			}
-			if ($issue && $issue->getDatePublished()) {
-				$issueDatePublished = strtotime($issue->getDatePublished());
-				$dateNode->setAttribute('iso-8601-date', strftime('%Y-%m-%d', $issueDatePublished));
-				$dateNode->appendChild($doc->createElement('day'))->nodeValue = strftime('%d', $issueDatePublished);
-				$dateNode->appendChild($doc->createElement('month'))->nodeValue = strftime('%m', $issueDatePublished);
-				$dateNode->appendChild($doc->createElement('year'))->nodeValue = strftime('%Y', $issueDatePublished);
-			} else {
-				$dateNode->appendChild($doc->createElement('year'))->nodeValue = strftime('%Y', $issueYear);
-			}
+			$dateNode->appendChild($doc->createElement('year'))->nodeValue = $issueYear;
 		}
 
 		// Set the article URLs: Landing page
