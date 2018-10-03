@@ -359,7 +359,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Article type
-		if ($articleType = trim($section->getLocalizedIdentifyType())) {
+		if ($articleType = strtolower(trim($section->getLocalizedIdentifyType()))) {
 			$articleNode = $xpath->query("//article")->item(0);
 			$articleNode->setAttribute('article-type', $articleType);
 		}
