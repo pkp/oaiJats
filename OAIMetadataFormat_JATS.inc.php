@@ -348,6 +348,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$metaNameNode->nodeValue = 'issue-cover';
 			$metaValueNode = $customMetaGroupNode->appendChild($doc->createElement('meta-value'));
 			$inlineGraphicNode = $metaValueNode->appendChild($doc->createElement('inline-graphic'));
+			$inlineGraphicNode->setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 			$inlineGraphicNode->setAttribute('xlink:href', $coverUrl);
 
 			$match = $xpath->query("//article/front/article-meta/counts");
