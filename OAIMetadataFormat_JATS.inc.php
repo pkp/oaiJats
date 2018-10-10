@@ -230,10 +230,15 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Set the article title.
 		$titleGroupNode = $xpath->query('//article/front/article-meta/title-group')->item(0);
-		foreach ($titleGroupNode->getElementsByTagName('article-title') as $titleNode) $titleGroupNode->removeChild($titleNode);
+		while ($titleGroupNode->hasChildNodes()) $titleGroupNode->removeChild($titleGroupNode->firstChild);
+		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
+		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
+		$titleNode->nodeValue = $article->getLocalizedTitle();
 		foreach ($article->getTitle(null) as $locale => $title) {
-			$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
-			$titleNode->setAttribute('xml:lang', substr($locale,0,2));
+			if ($locale == $article->getLocale()) continue;
+			$transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
+			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
+			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
 			$titleNode->nodeValue = $title;
 		}
 
