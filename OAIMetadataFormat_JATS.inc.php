@@ -325,6 +325,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$subjGroupNode = $articleCategoriesNode->appendChild($doc->createElement('subj-group'));
 			$subjGroupNode->setAttribute('subj-group-type', 'heading');
 		}
+		$subjGroupNode->setAttribute('xml:lang', substr($journal->getPrimaryLocale(),0,2));
 		$subjectNode = $subjGroupNode->appendChild($doc->createElement('subject'));
 		$subjectNode->nodeValue = $section->getTitle($journal->getPrimaryLocale());
 
