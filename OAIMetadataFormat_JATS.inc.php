@@ -356,12 +356,16 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$inlineGraphicNode->setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 			$inlineGraphicNode->setAttribute('xlink:href', $coverUrl);
 
-			$match = $xpath->query("//article/front/article-meta/counts");
-			if ($match->length) $match->item(0)->nodeValue++;
-			else {
-				$countsNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('counts'));
-				$countsNode->nodeValue = 1;
-			}
+			// Ensure that there's a counts node
+			$match = $xpath->query('//article/front/article-meta/counts');
+			if ($match->length) $countsNode = $match->item(0);
+			else $countsNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('counts'));
+
+			// Ensure that there's a fig-count node, and increment it
+			$match = $xpath->query('//article/front/article-meta/counts/fig-count');
+			if ($match->length) $figCountNode = $match->item(0);
+			else $figCountNode = $this->_addChildInOrder($countsNode, $doc->createElement('fig-count'));
+			$figCountNode->nodeValue += 1;
 		}
 
 		// Article type
