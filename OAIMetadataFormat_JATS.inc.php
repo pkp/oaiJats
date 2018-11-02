@@ -350,7 +350,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Issue cover page
 		if ($coverUrl = $issue->getLocalizedCoverImageUrl()) {
 			$customMetaGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('custom-meta-group'));
-			$customMetaNode = $this->_addChildInOrder($customMetaGroupNode, $doc->createElement('custom-meta'));
+			$customMetaNode = $customMetaGroupNode->appendChild($doc->createElement('custom-meta'));
 			$metaNameNode = $customMetaNode->appendChild($doc->createElement('meta-name'));
 			$metaNameNode->nodeValue = 'issue-cover';
 			$metaValueNode = $customMetaNode->appendChild($doc->createElement('meta-value'));
