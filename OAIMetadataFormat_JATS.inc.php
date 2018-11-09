@@ -221,10 +221,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Set the issue title (if applicable).
 		if ($issue && $issue->getShowTitle()) {
 			$match = $xpath->query('//article/front/article-meta/issue-title');
-			if ($match->length) $titleNode = $match->item(0);
-			else $titleNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-title'));
-			$titleNode->nodeValue = $issue->getTitle($journal->getPrimaryLocale());
-			$titleNode->setAttribute('xml:lang', substr($journal->getPrimaryLocale(),0,2));
+			foreach ($match as $node) $articleMetaNode->removeChild($node);
+			foreach ($issue->getTitle(null) as $locale => $title) {
+				$titleNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-title'));
+				$titleNode->nodeValue = $title;
+				$titleNode->setAttribute('xml:lang', substr($locale,0,2));
+			}
 		}
 
 
