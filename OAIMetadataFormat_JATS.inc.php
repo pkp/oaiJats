@@ -272,7 +272,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		foreach ((array) $article->getAbstract(null) as $locale => $abstract) {
 			if (empty($abstract)) continue;
 			$abstractDoc = new DOMDocument;
-			if (!strpos($abstract, '<p>')) $abstract = "<p>$abstract</p>";
+			if (strpos($abstract, '<p>')===null) $abstract = "<p>$abstract</p>";
 			$abstractDoc->loadXML('<abstract>' . $purifier->purify($abstract) . '</abstract>');
 			$abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($abstractDoc->documentElement, true));
 			$abstractNode->setAttribute('xml:lang', substr($locale,0,2));
