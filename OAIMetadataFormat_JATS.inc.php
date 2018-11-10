@@ -110,6 +110,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			'article-meta' => array('article-id', 'article-categories', 'title-group', 'contrib-group', 'aff', 'aff-alternatives', 'x', 'author-notes', 'pub-date', 'volume', 'volume-id', 'volume-series', 'issue', 'issue-id', 'issue-title', 'issue-sponsor', 'issue-part', 'isbn', 'supplement', 'fpage', 'lpage', 'page-range', 'elocation-id', 'email', 'ext-link', 'uri', 'product', 'supplementary-material', 'history', 'permissions', 'self-uri', 'related-article', 'related-object', 'abstract', 'trans-abstract', 'kwd-group', 'funding-group', 'conference', 'counts', 'custom-meta-group'),
 			'journal-meta' => array('journal-id', 'journal-title-group', 'contrib-group', 'aff', 'aff-alternatives', 'issn', 'issn-l', 'isbn', 'publisher', 'notes', 'self-uri', 'custom-meta-group'),
 		);
+
 		assert(isset($permittedElementOrders[$parentNode->nodeName])); // We have an order list for the parent node
 		$order = $permittedElementOrders[$parentNode->nodeName];
 		$position = array_search($childNode->nodeName, $order);
@@ -223,6 +224,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$match = $xpath->query('//article/front/article-meta/issue-title');
 			foreach ($match as $node) $articleMetaNode->removeChild($node);
 			foreach ($issue->getTitle(null) as $locale => $title) {
+				if (empty($title)) continue;
 				$titleNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-title'));
 				$titleNode->nodeValue = $title;
 				$titleNode->setAttribute('xml:lang', substr($locale,0,2));
@@ -319,17 +321,15 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		else {
 			$articleCategoriesNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('article-categories'));
 		}
-		$match = $xpath->query('//article/front/article-meta/article-categories/subj-group[@subj-group-type="heading"]');
-		if ($match->length) {
-			$subjGroupNode = $match->item(0);
-			while ($subjGroupNode->hasChildNodes()) $subjGroupNode->removeChild($subjGroupNode->firstChild);
-		} else {
+		while ($articleCategoriesNode->hasChildNodes()) $articleCategoriesNode->removeChild($articleCategoriesNode->firstChild);
+		foreach ($section->getTitle(null) as $locale => $title) {
+			if (empty($title)) continue;
 			$subjGroupNode = $articleCategoriesNode->appendChild($doc->createElement('subj-group'));
 			$subjGroupNode->setAttribute('subj-group-type', 'heading');
+			$subjGroupNode->setAttribute('xml:lang', substr($locale,0,2));
+			$subjectNode = $subjGroupNode->appendChild($doc->createElement('subject'));
+			$subjectNode->nodeValue = $title;
 		}
-		$subjGroupNode->setAttribute('xml:lang', substr($journal->getPrimaryLocale(),0,2));
-		$subjectNode = $subjGroupNode->appendChild($doc->createElement('subject'));
-		$subjectNode->nodeValue = $section->getTitle($journal->getPrimaryLocale());
 
 		// Article sequence information
 		$publishedArticleDao = DAORegistry::getDAO('PublishedArticleDAO');
@@ -368,7 +368,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			// Ensure that there's a fig-count node, and increment it
 			$match = $xpath->query('//article/front/article-meta/counts/fig-count');
 			if ($match->length) $figCountNode = $match->item(0);
-			else $figCountNode = $this->_addChildInOrder($countsNode, $doc->createElement('fig-count'));
+			else $figCountNode = $countsNode->appendChild($doc->createElement('fig-count'));
 			$figCountNode->nodeValue += 1;
 		}
 
