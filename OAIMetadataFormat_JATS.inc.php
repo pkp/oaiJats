@@ -238,12 +238,22 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
 		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
 		$titleNode->nodeValue = $article->getLocalizedTitle();
+		if (!empty($subtitle = $article->getSubtitle($article->getLocale()))) {
+			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
+			$subtitleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
+			$subtitleNode->nodeValue = $subtitle;
+		}
 		foreach ($article->getTitle(null) as $locale => $title) {
 			if ($locale == $article->getLocale()) continue;
 			$transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
 			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
 			$titleNode->nodeValue = $title;
+			if (!empty($subtitle = $article->getSubtitle($locale))) {
+				$subtitleNode = $transTitleGroupNode->appendChild($doc->createElement('subtitle'));
+				$subtitleNode->setAttribute('xml:lang', substr($locale,0,2));
+				$subtitleNode->nodeValue = $subtitle;
+			}
 		}
 
 		// Set the article keywords.
