@@ -192,14 +192,18 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$dateNode->appendChild($doc->createElement('year'))->nodeValue = $issueYear;
 		}
 
+		// Remove all article-meta/self-uri nodes in preparation for additions below
+		$match = $xpath->query('//article/front/article-meta/self-uri');
+		foreach ($match as $node) $articleMetaNode->removeChild($node);
+
 		// Set the article URLs: Landing page
 		$uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
-		$uriNode->nodeValue = $request->url(null, 'article', 'view', $article->getBestArticleId());
+		$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', $article->getBestArticleId()));
 
 		// Set the article URLs: Galleys
 		foreach ($article->getGalleys() as $galley) {
 			$uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
-			$uriNode->nodeValue = $request->url(null, 'article', 'view', array($article->getBestArticleId(), $galley->getId()));
+			$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', array($article->getBestArticleId(), $galley->getId())));
 			$uriNode->setAttribute('content-type', $galley->getFileType());
 		}
 
