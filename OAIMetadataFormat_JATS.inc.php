@@ -283,11 +283,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) $articleMetaNode->removeChild($abstractNode);
 		foreach ((array) $article->getAbstract(null) as $locale => $abstract) {
 			if (empty($abstract)) continue;
+			$isPrimary = $locale == $article->getLocale();
 			$abstractDoc = new DOMDocument;
 			if (strpos($abstract, '<p>')===null) $abstract = "<p>$abstract</p>";
-			$abstractDoc->loadXML('<abstract>' . $purifier->purify($abstract) . '</abstract>');
+			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $purifier->purify($abstract) . ($isPrimary?'</abstract>':'</trans-abstract>'));
 			$abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($abstractDoc->documentElement, true));
-			$abstractNode->setAttribute('xml:lang', substr($locale,0,2));
+			if (!$isPrimary) $abstractNode->setAttribute('xml:lang', substr($locale,0,2));
 		}
 
 		// Set the journal-id[publisher-id']
