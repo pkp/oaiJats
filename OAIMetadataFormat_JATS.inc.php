@@ -151,6 +151,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$articleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
 		$articleNode->setAttribute('dtd-version', '1.1');
 		$articleNode->setAttribute('specific-use', 'eps-0.1');
+		$articleNode->setAttribute('xmlns', 'https://jats.nlm.nih.gov/publishing/1.1/');
 
 		// Set the article publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
 		if ($datePublished = $article->getDatePublished()) {
