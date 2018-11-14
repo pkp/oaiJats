@@ -385,7 +385,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$match = $xpath->query('//article/front/article-meta/counts/fig-count');
 			if ($match->length) $figCountNode = $match->item(0);
 			else $figCountNode = $countsNode->appendChild($doc->createElement('fig-count'));
-			$figCountNode->nodeValue += 1;
+			$figCountNode->setAttribute('count', $figCountNode->getAttribute('count') + 1);
 		}
 
 		// Article type
