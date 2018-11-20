@@ -109,6 +109,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			'front' => array('article-meta', 'journal-meta'),
 			'article-meta' => array('article-id', 'article-categories', 'title-group', 'contrib-group', 'aff', 'aff-alternatives', 'x', 'author-notes', 'pub-date', 'volume', 'volume-id', 'volume-series', 'issue', 'issue-id', 'issue-title', 'issue-sponsor', 'issue-part', 'isbn', 'supplement', 'fpage', 'lpage', 'page-range', 'elocation-id', 'email', 'ext-link', 'uri', 'product', 'supplementary-material', 'history', 'permissions', 'self-uri', 'related-article', 'related-object', 'abstract', 'trans-abstract', 'kwd-group', 'funding-group', 'conference', 'counts', 'custom-meta-group'),
 			'journal-meta' => array('journal-id', 'journal-title-group', 'contrib-group', 'aff', 'aff-alternatives', 'issn', 'issn-l', 'isbn', 'publisher', 'notes', 'self-uri', 'custom-meta-group'),
+			'counts' => array('count', 'fig-count', 'table-count', 'equation-count', 'ref-count', 'page-count', 'word-count'),
 		);
 
 		assert(isset($permittedElementOrders[$parentNode->nodeName])); // We have an order list for the parent node
@@ -384,7 +385,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			// Ensure that there's a fig-count node, and increment it
 			$match = $xpath->query('//article/front/article-meta/counts/fig-count');
 			if ($match->length) $figCountNode = $match->item(0);
-			else $figCountNode = $countsNode->appendChild($doc->createElement('fig-count'));
+			else $figCountNode = $this->_addChildInOrder($countsNode, $doc->createElement('fig-count'));
 			$figCountNode->setAttribute('count', $figCountNode->getAttribute('count') + 1);
 		}
 
