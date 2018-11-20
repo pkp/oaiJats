@@ -242,7 +242,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		while ($titleGroupNode->hasChildNodes()) $titleGroupNode->removeChild($titleGroupNode->firstChild);
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
 		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
-		$titleNode->nodeValue = $article->getLocalizedTitle();
+		$titleNode->nodeValue = $article->getTitle($article->getLocale());
 		if (!empty($subtitle = $article->getSubtitle($article->getLocale()))) {
 			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
 			$subtitleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
