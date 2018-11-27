@@ -169,7 +169,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$dateNode->setAttribute('publication-format', 'epub');
 			}
 
-			$dateNode->setAttribute('iso-8601-date', strftime('%Y-%m-%d', $datePublished));
 			$dateNode->appendChild($doc->createElement('day'))->nodeValue = strftime('%d', $datePublished);
 			$dateNode->appendChild($doc->createElement('month'))->nodeValue = strftime('%m', $datePublished);
 			$dateNode->appendChild($doc->createElement('year'))->nodeValue = strftime('%Y', $datePublished);
@@ -181,7 +180,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		if (!$issueYear && $issue && $issue->getDatePublished()) $issueYear = strftime('%Y', strtotime($issue->getDatePublished()));
 		if (!$issueYear && $datePublished) $issueYear = strftime('%Y', $datePublished);
 		if ($issueYear) {
-			$match = $xpath->query("//article/front/article-meta/pub-date[@date-type='issue' and publication-format='epub']");
+			$match = $xpath->query("//article/front/article-meta/pub-date[@date-type='collection']");
 			if ($match->length) {
 				// An existing pub-date was found; empty and re-use.
 				$dateNode = $match->item(0);
@@ -189,7 +188,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			} else {
 				// No pub-date was found; create a new one.
 				$dateNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('pub-date'));
-				$dateNode->setAttribute('date-type', 'issue');
+				$dateNode->setAttribute('date-type', 'collection');
 			}
 			$dateNode->appendChild($doc->createElement('year'))->nodeValue = $issueYear;
 		}
