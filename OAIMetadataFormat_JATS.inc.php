@@ -351,9 +351,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$articleIds = array_map(function($publishedArticle) {
 			return $publishedArticle->getId();
 		}, $publishedArticleDao->getPublishedArticles($issue->getId()));
-		foreach (array('volume', 'number') as $nodeName) {
+		foreach (array('volume', 'issue') as $nodeName) {
 			$match = $xpath->query("//article/front/article-meta/$nodeName");
-			if ($match->length) $match->item(0)->setAttribute('seq', array_search($article->getId(), $articleIds));
+			if ($match->length) {
+				$match->item(0)->setAttribute('seq', array_search($article->getId(), $articleIds));
+				break;
+			}
 		}
 
 		// Issue ID
