@@ -322,6 +322,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$licenseUrl = $article->getLicenseURL();
 		if (!$match->length && ($copyrightHolder || $copyrightYear || $licenseUrl)) {
 			$permissionsNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('permissions'));
+			if ($copyrightYear || $copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-statement'))->nodeValue = __('submission.copyrightStatement', array('copyrightYear' => $copyrightYear, 'copyrightHolder' => $copyrightHolder));
 			if ($copyrightYear) $permissionsNode->appendChild($doc->createElement('copyright-year'))->nodeValue = $copyrightYear;
 			if ($copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-holder'))->nodeValue = $copyrightHolder;
 			if ($licenseUrl) {
