@@ -403,8 +403,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$contribNode = $contribGroupNode->appendChild($doc->createElement('contrib'));
 				$contribNode->setAttribute('contrib-type', $keyContribTypeMapping[$userGroup->getData('nameLocaleKey')]);
 				$nameNode = $contribNode->appendChild($doc->createElement('name'));
-				$surnameNode = $nameNode->appendChild($doc->createElement('surname'));
-				$surnameNode->nodeValue = method_exists($user, 'getLastName')?$user->getLastName():$user->getLocalizedFamilyName();
+				$surname = method_exists($user, 'getLastName')?$user->getLastName():$user->getLocalizedFamilyName();
+				if ($surname != '') {
+					$surnameNode = $nameNode->appendChild($doc->createElement('surname'));
+					$surnameNode->nodeValue = $surname;
+				}
 				$givenNamesNode = $nameNode->appendChild($doc->createElement('given-names'));
 				$givenNamesNode->nodeValue = method_exists($user, 'getFirstName')?$user->getFirstName():$user->getLocalizedGivenName();
 				if (method_exists($user, 'getMiddleName') && $s = $user->getMiddleName()) $givenNamesNode->nodeValue .= " $s";
