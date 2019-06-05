@@ -250,6 +250,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 		foreach ($article->getTitle(null) as $locale => $title) {
 			if ($locale == $article->getLocale()) continue;
+			if (trim($title) === '') continue;
 			$transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
 			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
