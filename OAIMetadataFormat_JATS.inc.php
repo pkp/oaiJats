@@ -356,7 +356,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		foreach (array('volume', 'issue') as $nodeName) {
 			$match = $xpath->query("//article/front/article-meta/$nodeName");
 			if ($match->length) {
-				$match->item(0)->setAttribute('seq', array_search($article->getId(), $articleIds));
+				$match->item(0)->setAttribute('seq', array_search($article->getId(), $articleIds)+1);
 				break;
 			}
 		}
