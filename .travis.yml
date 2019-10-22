@@ -1,6 +1,7 @@
 # @file
 # .travis.yml - PKP Plugins Integration
 
+dist: trusty
 language: php
 
 addons:
