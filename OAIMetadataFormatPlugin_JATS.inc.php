@@ -3,8 +3,8 @@
 /**
  * @file OAIMetadataFormatPlugin_JATS.inc.php
  *
- * Copyright (c) 2014-2018 Simon Fraser University
- * Copyright (c) 2003-2018 John Willinsky
+ * Copyright (c) 2014-2019 Simon Fraser University
+ * Copyright (c) 2003-2019 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class OAIMetadataFormatPlugin_JATS
@@ -61,7 +61,7 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	 * @return boolean
 	 */
 	function getEnabled() {
-		$request = PKPApplication::getRequest();
+		$request = PKPApplication::get()->getRequest();
 		if (!$request) return false;
 		$context = $request->getContext();
 		if (!$context) return false;
@@ -73,7 +73,7 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	 * @param $enabled boolean
 	 */
 	function setEnabled($enabled) {
-		$request = PKPApplication::getRequest();
+		$request = PKPApplication::get()->getRequest();
 		$context = $request->getContext();
 		$this->updateSetting($context->getId(), 'enabled', $enabled, 'bool');
 	}

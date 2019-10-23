@@ -7,8 +7,8 @@
 /**
  * @file OAIMetadataFormat_JATS.inc.php
  *
- * Copyright (c) 2013-2018 Simon Fraser University
- * Copyright (c) 2003-2018 John Willinsky
+ * Copyright (c) 2013-2019 Simon Fraser University
+ * Copyright (c) 2003-2019 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class OAIMetadataFormat_JATS
@@ -82,7 +82,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Check access
 		import('classes.issue.IssueAction');
 		$subscriptionRequired = IssueAction::subscriptionRequired($issue, $journal);
-		$isSubscribedDomain = IssueAction::subscribedDomain(Application::getRequest(), $journal, $issue->getId(), $article->getId());
+		$isSubscribedDomain = IssueAction::subscribedDomain(Application::get()->getRequest(), $journal, $issue->getId(), $article->getId());
 		if ($subscriptionRequired && !$subscriptionRequired) {
 			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
 			exit();
@@ -146,7 +146,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$journalMetaNode = $this->_addChildInOrder($frontNode, $doc->createElement('journal-meta'));
 		}
 
-		$request = Application::getRequest();
+		$request = Application::get()->getRequest();
 
 		$articleNode = $xpath->query('//article')->item(0);
 		$articleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
