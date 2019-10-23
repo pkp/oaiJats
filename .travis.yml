@@ -30,18 +30,14 @@ install:
   - lib/pkp/tools/travis/prepare-webserver.sh
   # Make sure we're using the current checkout of this repo rather than the built-in OJS/OMP version
   - ln -s ${TRAVIS_BUILD_DIR} ~/${APPLICATION}/plugins/generic/customHeader
+  # Add the JATS Template plugin (required for testing)
+  - git clone -b ${BRANCH} https://github.com/pkp/jatsTemplate.git plugins/generic/jatsTemplate
   # Install OJS/OMP & prep data environment
-  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml tests/data/10-InstallationTest.php
-  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml tests/data/20-CreateContextTest.php
-  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml tests/data/40-CreateUsersTest.php
-  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml tests/data/50-IssuesTest.php
-  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml tests/data/50-SectionsTest.php
-  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml tests/data/59-LogOutTest.php
-  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml tests/data/60-content/JmwandengaSubmissionTest.php
+  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml --filter "InstallationTest|CreateContextTest|CreateUsersTest|IssuesTest|SectionsTest|LogOutTest|JmwandengaSubmissionTest" tests/data
   - lib/pkp/tools/travis/dump-database.sh
 script:
   - set +xe
-  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --debug -v --configuration lib/pkp/tests/phpunit-env2.xml plugins/generic/customHeader/tests/functional/CustomHeaderFunctionalTest.php
+  - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --debug -v --configuration lib/pkp/tests/phpunit-env2.xml plugins/generic/customHeader/tests/functional/OAIJatsFunctionalTest.php
 after_failure:
   - sudo apt-get install sharutils
   - tar cz lib/pkp/tests/results | uuencode -m -
