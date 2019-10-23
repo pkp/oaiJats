@@ -35,7 +35,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// First, look for candidates in the galleys area (published content).
 		foreach ($galleys as $galley) {
-			$galleyFiles = $submissionFileDao->getLatestRevisionsByAssocId(ASSOC_TYPE_GALLEY, $galley->getId(), $galley->getSubmissionId(), SUBMISSION_FILE_PROOF);
+			$galleyFiles = $submissionFileDao->getLatestRevisionsByAssocId(ASSOC_TYPE_GALLEY, $galley->getId(), $article->getId(), SUBMISSION_FILE_PROOF);
 			foreach ($galleyFiles as $galleyFile) {
 				if ($this->_isCandidateFile($galleyFile)) $candidateFiles[] = $galleyFile;
 			}
@@ -81,8 +81,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Check access
 		import('classes.issue.IssueAction');
-		$subscriptionRequired = IssueAction::subscriptionRequired($issue, $journal);
-		$isSubscribedDomain = IssueAction::subscribedDomain(Application::get()->getRequest(), $journal, $issue->getId(), $article->getId());
+		$issueAction = new IssueAction();
+		$subscriptionRequired = $issueAction->subscriptionRequired($issue, $journal);
+		$isSubscribedDomain = $issueAction->subscribedDomain(Application::get()->getRequest(), $journal, $issue->getId(), $article->getId());
 		if ($subscriptionRequired && !$subscriptionRequired) {
 			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
 			exit();
@@ -349,10 +350,15 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Article sequence information
-		$publishedArticleDao = DAORegistry::getDAO('PublishedArticleDAO');
+		import('classes.submission.Submission'); // import STATUS_ constants
+		$publishedArticles = iterator_to_array(Services::get('submission')->getMany([
+			'contextId' => $journal->getId(),
+			'issueIds' => [$issue->getId()],
+			'status' => STATUS_PUBLISHED,
+		]));
 		$articleIds = array_map(function($publishedArticle) {
 			return $publishedArticle->getId();
-		}, $publishedArticleDao->getPublishedArticles($issue->getId()));
+		}, $publishedArticles);
 		foreach (array('volume', 'issue') as $nodeName) {
 			$match = $xpath->query("//article/front/article-meta/$nodeName");
 			if ($match->length) {
