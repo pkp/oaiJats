@@ -33,7 +33,7 @@ class OAIJatsFunctionalTest extends WebTestCase {
 	/**
 	 * Enable the plugin
 	 */
-	function testStaticPages() {
+	function testOAIResponse() {
 		$this->open(self::$baseUrl);
 
 		$this->logIn('admin', 'admin');
