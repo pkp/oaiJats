@@ -44,11 +44,13 @@ class OAIJatsFunctionalTest extends WebTestCase {
 		$this->click('//button[@id="plugins-button"]');
 
 		// Find and enable the JATS Template plugin
-		$this->click('//input[starts-with(@id, \'select-cell-jatstemplateplugin-enabled\')]');
+		$this->waitForElementPresent($selector='//input[starts-with(@id, \'select-cell-jatstemplateplugin-enabled\')]');
+		$this->click($selector);
 		$this->waitForElementPresent('//div[contains(.,\'The plugin "JATS Template Plugin" has been enabled.\')]');
 
 		// Find and enable this plugin
-		$this->click('//input[starts-with(@id, \'select-cell-OAIMetadataFormatPlugin_JATS-enabled\')]');
+		$this->waitForElementPresent($selector='//input[starts-with(@id, \'select-cell-OAIMetadataFormatPlugin_JATS-enabled\')]');
+		$this->click($selector);
 		$this->waitForElementPresent('//div[contains(.,\'The plugin "JATS Metadata Format" has been enabled.\')]');
 
 		// Fetch the resulting OAI XML. NOTE: We cannot (easily) use Webdriver to do
