@@ -64,7 +64,7 @@ class OAIJatsFunctionalTest extends WebTestCase {
 		$doc->loadXML($oaiRecord);
 		$xpath = new DOMXPath($doc);
 		$xpath->registerNamespace('oai', 'http://www.openarchives.org/OAI/2.0/');
-die($doc);
+die($oaiRecord);
 		// Ensure that there is only a single record.
 		$elements = $xpath->query('/oai:OAI-PMH/oai:ListRecords/oai:record');
 		$this->assertEquals(count($elements), 1);
