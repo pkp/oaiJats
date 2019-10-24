@@ -31,7 +31,7 @@ install:
   # Make sure we're using the current checkout of this repo rather than the built-in OJS/OMP version
   - ln -s ${TRAVIS_BUILD_DIR} ~/${APPLICATION}/plugins/generic/customHeader
   # Add the JATS Template plugin (required for testing)
-  - git clone -b ${BRANCH} https://github.com/pkp/jatsTemplate.git plugins/generic/jatsTemplate
+  - git clone -b ${BRANCH} https://github.com/pkp/jatsTemplate.git ${APPLICATION}/plugins/generic/jatsTemplate
   # Install OJS/OMP & prep data environment
   - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml --filter "InstallationTest|CreateContextTest|CreateUsersTest|IssuesTest|SectionsTest|LogOutTest|JmwandengaSubmissionTest" tests/data
   - lib/pkp/tools/travis/dump-database.sh
