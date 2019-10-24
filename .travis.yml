@@ -35,6 +35,7 @@ install:
   # Install OJS/OMP & prep data environment
   - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --configuration lib/pkp/tests/phpunit-env1.xml --filter "InstallationTest|CreateContextTest|CreateUsersTest|IssuesTest|SectionsTest|LogOutTest|JmwandengaSubmissionTest" tests/data
   - lib/pkp/tools/travis/dump-database.sh
+  - sleep 2
 script:
   - set +xe
   - lib/pkp/lib/vendor/phpunit/phpunit/phpunit --debug -v --configuration lib/pkp/tests/phpunit-env2.xml plugins/generic/customHeader/tests/functional/OAIJatsFunctionalTest.php
