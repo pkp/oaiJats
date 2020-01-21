@@ -232,7 +232,8 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			foreach ($issue->getTitle(null) as $locale => $title) {
 				if (empty($title)) continue;
 				$titleNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-title'));
-				$titleNode->nodeValue = $title;
+				$titleText = $doc->createTextNode($title);
+				$titleNode->appendChild($titleText);
 				$titleNode->setAttribute('xml:lang', substr($locale,0,2));
 			}
 		}
@@ -243,11 +244,13 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		while ($titleGroupNode->hasChildNodes()) $titleGroupNode->removeChild($titleGroupNode->firstChild);
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
 		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
-		$titleNode->nodeValue = $article->getTitle($article->getLocale());
+		$articleTitleText = $doc->createTextNode($article->getTitle($article->getLocale()));
+                $titleNode->appendChild($articleTitleText);
 		if (!empty($subtitle = $article->getSubtitle($article->getLocale()))) {
+			$subtitleText = $doc->createTextNode($subtitle);
 			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
 			$subtitleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
-			$subtitleNode->nodeValue = $subtitle;
+			$subtitleNode->appendChild($subtitleText);
 		}
 		foreach ($article->getTitle(null) as $locale => $title) {
 			if ($locale == $article->getLocale()) continue;
@@ -255,10 +258,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
 			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
-			$titleNode->nodeValue = $title;
+			$titleText = $doc->createTextNode($title);
+                        $titleNode->appendChild($titleText);
 			if (!empty($subtitle = $article->getSubtitle($locale))) {
 				$subtitleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-subtitle'));
-				$subtitleNode->nodeValue = $subtitle;
+				$subtitleText = $doc->createTextNode($subtitle);
+                                $subtitleNode->appendChild($subtitleText);
 			}
 		}
 
