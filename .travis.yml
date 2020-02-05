@@ -29,7 +29,7 @@ install:
   - npm i g -npm && npm install && npm run build
   - ln -s ${TRAVIS_BUILD_DIR} ~/${APPLICATION}/plugins/oaiMetadataFormats/oaiJats
   # This plugin also requires the OAI JATS plugin (they are tested together via this script)
-  - git clone -b ${branch} https://github.com/pkp/jatsTemplate plugins/generic
+  - git clone -b ${BRANCH} https://github.com/pkp/jatsTemplate plugins/generic
   # Install OJS/OMP & prep data environment
   - $(npm bin)/cypress run --spec "cypress/tests/data/10-Installation.spec.js,cypress/tests/data/20-CreateContext.spec.js,cypress/tests/data/40-CreateUsers.spec.js,cypress/tests/data/50-CreateIssues.spec.js,cypress/tests/data/50-CreateSections.spec.js,cypress/tests/data/60-content/JmwandengaSubmission.spec.js"
 script:
