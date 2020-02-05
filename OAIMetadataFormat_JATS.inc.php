@@ -148,6 +148,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		$request = Application::get()->getRequest();
+		$publication = $article->getCurrentPublication();
 
 		$articleNode = $xpath->query('//article')->item(0);
 		$articleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
@@ -271,7 +272,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$keywordGroupNode = $xpath->query('//article/front/article-meta/kwd-group')->item(0);
 		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
 		foreach ($articleMetaNode->getElementsByTagName('kwd-group') as $kwdGroupNode) $articleMetaNode->removeChild($kwdGroupNode);
-		foreach ($submissionKeywordDao->getKeywords($article->getId(), $journal->getSupportedLocales()) as $locale => $keywords) {
+		foreach ($submissionKeywordDao->getKeywords($publication->getId(), $journal->getSupportedLocales()) as $locale => $keywords) {
 			if (empty($keywords)) continue;
 
 			// Load the article.subject locale key in possible other languages
@@ -292,7 +293,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$purifier = new HTMLPurifier($config);
 		}
 		foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) $articleMetaNode->removeChild($abstractNode);
-		foreach ((array) $article->getAbstract(null) as $locale => $abstract) {
+		foreach ((array) $publication->getData('abstract') as $locale => $abstract) {
 			if (empty($abstract)) continue;
 			$isPrimary = $locale == $article->getLocale();
 			$abstractDoc = new DOMDocument;
