@@ -24,7 +24,7 @@ describe('OAI JATS plugin tests', function() {
 		cy.get('div:contains(\'The plugin "JATS Metadata Format" has been enabled.\')');
 	});
 	it('Exercises a JATS OAI request', function() {
-		cy.request('index.php/publicknowledge/oai?verb=ListRecords&metadataPrefix=oai_dc').then(response => {
+		cy.request('index.php/publicknowledge/oai?verb=ListRecords&metadataPrefix=jats').then(response => {
 			var identifier = null;
 
 			// Ensure we got a valid XML response
@@ -58,7 +58,7 @@ describe('OAI JATS plugin tests', function() {
 			expect(identifier).to.not.eq(null);
 
 			// Fetch an individual record by identifier
-			cy.request('index.php/index/oai?verb=GetRecord&metadataPrefix=jats&identifier=' + encodeURI(identifier)).then(response => {
+			cy.request('index.php/publicknowledge/oai?verb=GetRecord&metadataPrefix=jats&identifier=' + encodeURI(identifier)).then(response => {
 				// Ensure we got a valid XML response
 				expect(response.status).to.eq(200);
 				expect(response.headers['content-type']).to.eq('text/xml;charset=UTF-8');

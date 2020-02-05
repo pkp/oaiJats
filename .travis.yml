@@ -27,7 +27,7 @@ install:
   # Build/install dependencies
   - lib/pkp/tools/travis/install-composer-dependencies.sh
   - npm i g -npm && npm install && npm run build
-  - ln -s ${TRAVIS_BUILD_DIR} ~/${APPLICATION}/plugins/oaiMetadataFormats/oaiJats
+  - cp -r ${TRAVIS_BUILD_DIR} ~/${APPLICATION}/plugins/oaiMetadataFormats/oaiJats
   # This plugin also requires the OAI JATS plugin (they are tested together via this script)
   - git clone -b ${BRANCH} https://github.com/pkp/jatsTemplate plugins/generic/jatsTemplate
   # Install OJS/OMP & prep data environment
