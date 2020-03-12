@@ -31,6 +31,6 @@ install:
   # This plugin also requires the OAI JATS plugin (they are tested together via this script)
   - git clone -b ${BRANCH} https://github.com/pkp/jatsTemplate plugins/generic/jatsTemplate
   # Install OJS/OMP & prep data environment
-  - $(npm bin)/cypress run --spec "cypress/tests/data/10-Installation.spec.js,cypress/tests/data/20-CreateContext.spec.js,cypress/tests/data/40-CreateUsers.spec.js,cypress/tests/data/50-CreateIssues.spec.js,cypress/tests/data/50-CreateSections.spec.js,cypress/tests/data/60-content/JmwandengaSubmission.spec.js"
+  - $(npm bin)/cypress run --spec "cypress/tests/data/10-Installation.spec.js,cypress/tests/data/20-CreateContext.spec.js,cypress/tests/data/40-CreateUsers.spec.js,cypress/tests/data/50-CreateIssues.spec.js,cypress/tests/data/50-CreateSections.spec.js,cypress/tests/data/60-content/AmwandengaSubmission.spec.js"
 script:
   - $(npm bin)/cypress run --config integrationFolder=plugins/oaiMetadataFormats/oaiJats/cypress/tests
