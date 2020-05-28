@@ -205,7 +205,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		foreach ($article->getGalleys() as $galley) {
 			$uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
 			$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', array($article->getBestArticleId(), $galley->getId())));
-			$uriNode->setAttribute('content-type', $galley->getFileType());
+			if (!$representation->getData('urlRemote')) $uriNode->setAttribute('content-type', $galley->getFileType());
 		}
 
 		// Set the issue volume (if applicable).
