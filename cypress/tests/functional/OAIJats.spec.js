@@ -11,8 +11,7 @@ describe('OAI JATS plugin tests', function() {
 	it('Sets up the testing environment', function() {
 		cy.login('admin', 'admin', 'publicknowledge');
 
-		cy.get('ul[id="navigationPrimary"] a:contains("Settings")').click();
-		cy.get('ul[id="navigationPrimary"] a:contains("Website")').click();
+		cy.get('.app__nav a').contains('Website').click();
 		cy.get('button[id="plugins-button"]').click();
 
 		// Find and enable the JATS Template plugin
