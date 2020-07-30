@@ -21,8 +21,7 @@
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
 	 * Identify a candidate JATS file to expose via OAI.
-	 * @param $article Article
-	 * @param $galleys array
+	 * @param $record DataObject
 	 * @return DOMDocument|null
 	 */
 	protected function _findJats($record) {
@@ -75,7 +74,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$oaiDao = DAORegistry::getDAO('OAIDAO');
 		$journal = $record->getData('journal');
 		$article = $record->getData('article');
-		$galleys = $record->getData('galleys');
 		$section = $record->getData('section');
 		$issue = $record->getData('issue');
 
@@ -84,7 +82,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$issueAction = new IssueAction();
 		$subscriptionRequired = $issueAction->subscriptionRequired($issue, $journal);
 		$isSubscribedDomain = $issueAction->subscribedDomain(Application::get()->getRequest(), $journal, $issue->getId(), $article->getId());
-		if ($subscriptionRequired && !$subscriptionRequired) {
+		if ($subscriptionRequired && !$isSubscribedDomain) {
 			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
 			exit();
 		}
