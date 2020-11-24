@@ -30,26 +30,27 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		import('lib.pkp.classes.submission.SubmissionFile'); // SUBMISSION_FILE_... constants
 		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
-		$candidateFiles = array();
+		$candidateFiles = [];
 
 		// First, look for candidates in the galleys area (published content).
 		foreach ($galleys as $galley) {
-			$galleyFiles = $submissionFileDao->getLatestRevisionsByAssocId(ASSOC_TYPE_GALLEY, $galley->getId(), $article->getId(), SUBMISSION_FILE_PROOF);
-			foreach ($galleyFiles as $galleyFile) {
-				if ($this->_isCandidateFile($galleyFile)) $candidateFiles[] = $galleyFile;
-			}
+			$galleyFile = $submissionFileDao->getById($galley->getData('submissionFileId'));
+			if ($galleyFile && $this->_isCandidateFile($galleyFile)) $candidateFiles[] = $galleyFile;
 		}
 
 		// If no candidates were found, look in the layout area (unpublished content).
 		if (empty($candidateFiles)) {
-			$layoutFiles = $submissionFileDao->getLatestRevisions($article->getId(), SUBMISSION_FILE_PRODUCTION_READY);
+			$layoutFiles = Services::get('submissionFile')->getMany([
+				'fileStages' => [SUBMISSION_FILE_PRODUCTION_READY],
+				'submissionIds' => [$article->getId()]
+			]);
 			foreach ($layoutFiles as $layoutFile) {
 				if ($this->_isCandidateFile($layoutFile)) $candidateFiles[] = $layoutFile;
 			}
 		}
 
 		$doc = null;
-		HookRegistry::call('OAIMetadataFormat_JATS::findJats', array(&$this, &$record, &$candidateFiles, &$doc));
+		HookRegistry::call('OAIMetadataFormat_JATS::findJats', [&$this, &$record, &$candidateFiles, &$doc]);
 
 		// If no candidate files were located, return the null XML.
 		if (!$doc && empty($candidateFiles)) {
@@ -104,12 +105,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 * @return DOMNode The child node.
 	 */
 	protected function _addChildInOrder($parentNode, $childNode) {
-		$permittedElementOrders = array(
-			'front' => array('article-meta', 'journal-meta'),
-			'article-meta' => array('article-id', 'article-categories', 'title-group', 'contrib-group', 'aff', 'aff-alternatives', 'x', 'author-notes', 'pub-date', 'volume', 'volume-id', 'volume-series', 'issue', 'issue-id', 'issue-title', 'issue-sponsor', 'issue-part', 'isbn', 'supplement', 'fpage', 'lpage', 'page-range', 'elocation-id', 'email', 'ext-link', 'uri', 'product', 'supplementary-material', 'history', 'permissions', 'self-uri', 'related-article', 'related-object', 'abstract', 'trans-abstract', 'kwd-group', 'funding-group', 'conference', 'counts', 'custom-meta-group'),
-			'journal-meta' => array('journal-id', 'journal-title-group', 'contrib-group', 'aff', 'aff-alternatives', 'issn', 'issn-l', 'isbn', 'publisher', 'notes', 'self-uri', 'custom-meta-group'),
-			'counts' => array('count', 'fig-count', 'table-count', 'equation-count', 'ref-count', 'page-count', 'word-count'),
-		);
+		$permittedElementOrders = [
+			'front' => ['article-meta', 'journal-meta'],
+			'article-meta' => ['article-id', 'article-categories', 'title-group', 'contrib-group', 'aff', 'aff-alternatives', 'x', 'author-notes', 'pub-date', 'volume', 'volume-id', 'volume-series', 'issue', 'issue-id', 'issue-title', 'issue-sponsor', 'issue-part', 'isbn', 'supplement', 'fpage', 'lpage', 'page-range', 'elocation-id', 'email', 'ext-link', 'uri', 'product', 'supplementary-material', 'history', 'permissions', 'self-uri', 'related-article', 'related-object', 'abstract', 'trans-abstract', 'kwd-group', 'funding-group', 'conference', 'counts', 'custom-meta-group'],
+			'journal-meta' => ['journal-id', 'journal-title-group', 'contrib-group', 'aff', 'aff-alternatives', 'issn', 'issn-l', 'isbn', 'publisher', 'notes', 'self-uri', 'custom-meta-group'],
+			'counts' => ['count', 'fig-count', 'table-count', 'equation-count', 'ref-count', 'page-count', 'word-count'],
+		];
 
 		assert(isset($permittedElementOrders[$parentNode->nodeName])); // We have an order list for the parent node
 		$order = $permittedElementOrders[$parentNode->nodeName];
@@ -204,7 +205,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Set the article URLs: Galleys
 		foreach ($article->getGalleys() as $galley) {
 			$uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
-			$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', array($article->getBestArticleId(), $galley->getId())));
+			$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', [$article->getBestArticleId(), $galley->getId()]));
 			if (!$galley->getData('urlRemote')) $uriNode->setAttribute('content-type', $galley->getFileType());
 		}
 
@@ -278,7 +279,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 			$kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
 			$kwdGroupNode->setAttribute('xml:lang', substr($locale,0,2));
-			$kwdGroupNode->appendChild($doc->createElement('title'))->nodeValue = __('article.subject', array(), $locale);
+			$kwdGroupNode->appendChild($doc->createElement('title'))->nodeValue = __('article.subject', [], $locale);
 			foreach ($keywords as $keyword) $kwdGroupNode->appendChild($doc->createElement('kwd'))->nodeValue = $keyword;
 		}
 
@@ -328,7 +329,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$licenseUrl = $article->getLicenseURL();
 		if (!$match->length && ($copyrightHolder || $copyrightYear || $licenseUrl)) {
 			$permissionsNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('permissions'));
-			if ($copyrightYear || $copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-statement'))->nodeValue = __('submission.copyrightStatement', array('copyrightYear' => $copyrightYear, 'copyrightHolder' => $copyrightHolder));
+			if ($copyrightYear || $copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-statement'))->nodeValue = __('submission.copyrightStatement', ['copyrightYear' => $copyrightYear, 'copyrightHolder' => $copyrightHolder]);
 			if ($copyrightYear) $permissionsNode->appendChild($doc->createElement('copyright-year'))->nodeValue = $copyrightYear;
 			if ($copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-holder'))->nodeValue = $copyrightHolder;
 			if ($licenseUrl) {
@@ -363,7 +364,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$articleIds = array_map(function($publishedArticle) {
 			return $publishedArticle->getId();
 		}, $publishedArticles);
-		foreach (array('volume', 'issue') as $nodeName) {
+		foreach (['volume', 'issue'] as $nodeName) {
 			$match = $xpath->query("//article/front/article-meta/$nodeName");
 			if ($match->length) {
 				$match->item(0)->setAttribute('seq', array_search($article->getId(), $articleIds)+1);
@@ -402,11 +403,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$userGroups = $userGroupDao->getByContextId($journal->getId());
 		$journalMetaNode = $xpath->query('//article/front/journal-meta')->item(0);
 		$contribGroupNode = $this->_addChildInOrder($journalMetaNode, $doc->createElement('contrib-group'));
-		$keyContribTypeMapping = array(
+		$keyContribTypeMapping = [
 			'default.groups.name.manager' => 'jmanager',
 			'default.groups.name.editor' => 'editor',
 			'default.groups.name.sectionEditor' => 'secteditor',
-		);
+		];
 		while ($userGroup = $userGroups->next()) {
 			if (!isset($keyContribTypeMapping[$userGroup->getData('nameLocaleKey')])) continue;
 
@@ -434,12 +435,16 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 * @return boolean
 	 */
 	protected function _isCandidateFile($submissionFile) {
-		// The file type isn't XML.
-		if (!in_array($submissionFile->getFileType(), array('application/xml', 'text/xml'))) return false;
+		$fileService = Services::get('file');
+		$filepath = $fileService->getPath($submissionFile->getData('fileId'));
+		$mimeType = $fileService->fs->getMimetype($filepath);
 
-		static $genres = array();
+		// The file type isn't XML.
+		if (!in_array($mimeType, ['application/xml', 'text/xml'])) return false;
+
+		static $genres = [];
 		$genreDao = DAORegistry::getDAO('GenreDAO');
-		$genreId = $submissionFile->getGenreId();
+		$genreId = $submissionFile->getData('genreId');
 		if (!isset($genres[$genreId])) $genres[$genreId] = $genreDao->getById($genreId);
 		assert($genres[$genreId]);
 		$genre = $genres[$genreId];
