@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-01-16 23:53+0000\n"
-"Last-Translator: Eirik Hanssen <eirikh@oslomet.no>\n"
+"PO-Revision-Date: 2021-01-26 11:53+0000\n"
+"Last-Translator: Tormod Strømme <tormod.stromme@uib.no>\n"
 "Language-Team: Norwegian Bokmål <http://translate.pkp.sfu.ca/projects/"
 "plugins/oai-jats-plugin/nb_NO/>\n"
 "Language: nb_NO\n"
@@ -13,7 +13,7 @@ msgstr ""
 
 msgid "plugins.oaiMetadata.jats.description"
 msgstr ""
-"Strukturer metadata på en måte som er i overensstemmelse med JATS XML-"
+"Strukturerer metadata på en måte som er i overensstemmelse med JATS XML-"
 "formatet."
 
 msgid "plugins.oaiMetadata.jats.displayName"
