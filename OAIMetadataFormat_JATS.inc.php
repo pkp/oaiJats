@@ -61,8 +61,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Fetch the XML document
 		if (!$doc) {
 			$candidateFile = array_shift($candidateFiles);
+			$fileService = Services::get('file');
+			$filepath = $fileService->get($candidateFile->getData('fileId'))->path;
 			$doc = new DOMDocument;
-			$doc->loadXML(file_get_contents($candidateFile->getFilePath()));
+			$doc->loadXML($fileService->fs->read($filepath));
 		}
 
 		return $doc;
