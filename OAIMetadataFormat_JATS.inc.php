@@ -169,9 +169,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$dateNode->setAttribute('publication-format', 'epub');
 			}
 
-			$dateNode->appendChild($doc->createElement('day'))->nodeValue = strftime('%d', $datePublished);
-			$dateNode->appendChild($doc->createElement('month'))->nodeValue = strftime('%m', $datePublished);
-			$dateNode->appendChild($doc->createElement('year'))->nodeValue = strftime('%Y', $datePublished);
+			$dateNode->appendChild($doc->createElement('day'))->appendChild($doc->createTextNode(strftime('%d', $datePublished)));
+			$dateNode->appendChild($doc->createElement('month'))->appendChild($doc->createTextNode(strftime('%m', $datePublished)));
+			$dateNode->appendChild($doc->createElement('year'))->appendChild($doc->createTextNode(strftime('%Y', $datePublished)));
 		}
 
 		// Set the issue publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
@@ -190,7 +190,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$dateNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('pub-date'));
 				$dateNode->setAttribute('date-type', 'collection');
 			}
-			$dateNode->appendChild($doc->createElement('year'))->nodeValue = $issueYear;
+			$dateNode->appendChild($doc->createElement('year'))->appendChild($doc->createTextNode($issueYear));
 		}
 
 		// Remove all article-meta/self-uri nodes in preparation for additions below
@@ -213,7 +213,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$match = $xpath->query('//article/front/article-meta/volume');
 			if ($match->length) $volumeNode = $match->item(0);
 			else $volumeNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('volume'));
-			$volumeNode->nodeValue = $issue->getVolume();
+			$volumeNode->appendChild($doc->createTextNode($issue->getVolume()));
 		}
 
 		// Set the issue number (if applicable).
@@ -221,7 +221,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$match = $xpath->query('//article/front/article-meta/issue');
 			if ($match->length) $numberNode = $match->item(0);
 			else $numberNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue'));
-			$numberNode->nodeValue = $issue->getNumber();
+			$numberNode->appendChild($doc->createTextNode($issue->getNumber()));
 		}
 
 		// Set the issue title (if applicable).
@@ -231,7 +231,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			foreach ($issue->getTitle(null) as $locale => $title) {
 				if (empty($title)) continue;
 				$titleNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-title'));
-				$titleNode->nodeValue = $title;
+				$titleNode->appendChild($doc->createTextNode($title));
 				$titleNode->setAttribute('xml:lang', substr($locale,0,2));
 			}
 		}
@@ -242,11 +242,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		while ($titleGroupNode->hasChildNodes()) $titleGroupNode->removeChild($titleGroupNode->firstChild);
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
 		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
-		$titleNode->nodeValue = $article->getTitle($article->getLocale());
+		$titleNode->appendChild($doc->createTextNode($article->getTitle($article->getLocale())));
 		if (!empty($subtitle = $article->getSubtitle($article->getLocale()))) {
 			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
 			$subtitleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
-			$subtitleNode->nodeValue = $subtitle;
+			$subtitleNode->appendChild($doc->createTextNode($subtitle));
 		}
 		foreach ($article->getTitle(null) as $locale => $title) {
 			if ($locale == $article->getLocale()) continue;
@@ -254,10 +254,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
 			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
-			$titleNode->nodeValue = $title;
+			$titleNode->appendChild($doc->createTextNode($title));
 			if (!empty($subtitle = $article->getSubtitle($locale))) {
 				$subtitleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-subtitle'));
-				$subtitleNode->nodeValue = $subtitle;
+				$subtitleNode->appendChild($doc->createTextNode($subtitle));
 			}
 		}
 
@@ -273,8 +273,8 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 			$kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
 			$kwdGroupNode->setAttribute('xml:lang', substr($locale,0,2));
-			$kwdGroupNode->appendChild($doc->createElement('title'))->nodeValue = __('article.subject', array(), $locale);
-			foreach ($keywords as $keyword) $kwdGroupNode->appendChild($doc->createElement('kwd'))->nodeValue = $keyword;
+			$kwdGroupNode->appendChild($doc->createElement('title'))->appendChild($doc->createTextNode(__('article.subject', array(), $locale)));
+			foreach ($keywords as $keyword) $kwdGroupNode->appendChild($doc->createElement('kwd'))->appendChild($doc->createTextNode($keyword));
 		}
 
 		// Set the article abstract.
@@ -298,21 +298,21 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Set the journal-id[publisher-id']
 		$match = $xpath->query("//article/front/journal-meta/journal-id[@journal-id-type='publisher']");
-		if ($match->length) $match->item(0)->nodeValue = $journal->getPath();
+		if ($match->length) $match->item(0)->appendChild($doc->createTextNode($journal->getPath()));
 		else {
 			$journalIdNode = $this->_addChildInOrder($journalMetaNode, $doc->createElement('journal-id'));
 			$journalIdNode->setAttribute('journal-id-type', 'publisher');
-			$journalIdNode->nodeValue = $journal->getPath();
+			$journalIdNode->appendChild($doc->createTextNode($journal->getPath()));
 		}
 
 		// Store the DOI
 		if ($doi = trim($article->getStoredPubId('doi'))) {
 			$match = $xpath->query("//article/front/article-meta/article-id[@pub-id-type='doi']");
-			if ($match->length) $match->item(0)->nodeValue = $doi;
+			if ($match->length) $match->item(0)->appendChild($doc->createTextNode($doi));
 			else {
 				$articleIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('article-id'));
 				$articleIdNode->setAttribute('pub-id-type', 'doi');
-				$articleIdNode->nodeValue = $doi;
+				$articleIdNode->appendChild($doc->createTextNode($doi));
 			}
 		}
 
@@ -323,9 +323,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$licenseUrl = $article->getLicenseURL();
 		if (!$match->length && ($copyrightHolder || $copyrightYear || $licenseUrl)) {
 			$permissionsNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('permissions'));
-			if ($copyrightYear || $copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-statement'))->nodeValue = __('submission.copyrightStatement', array('copyrightYear' => $copyrightYear, 'copyrightHolder' => $copyrightHolder));
-			if ($copyrightYear) $permissionsNode->appendChild($doc->createElement('copyright-year'))->nodeValue = $copyrightYear;
-			if ($copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-holder'))->nodeValue = $copyrightHolder;
+			if ($copyrightYear || $copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-statement'))->appendChild($doc->createTextNode(__('submission.copyrightStatement', array('copyrightYear' => $copyrightYear, 'copyrightHolder' => $copyrightHolder))));
+			if ($copyrightYear) $permissionsNode->appendChild($doc->createElement('copyright-year'))->appendChild($doc->createTextNode($copyrightYear));
+			if ($copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-holder'))->appendChild($doc->createTextNode($copyrightHolder));
 			if ($licenseUrl) {
 				$licenseNode = $permissionsNode->appendChild($doc->createElement('license'));
 				$licenseNode->setAttribute('xlink:href', $licenseUrl);
@@ -345,7 +345,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$subjGroupNode->setAttribute('subj-group-type', 'heading');
 			$subjGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$subjectNode = $subjGroupNode->appendChild($doc->createElement('subject'));
-			$subjectNode->nodeValue = $title;
+			$subjectNode->appendChild($doc->createTextNode($title));
 		}
 
 		// Article sequence information
@@ -363,10 +363,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Issue ID
 		$match = $xpath->query("//article/front/article-meta/issue-id");
-		if ($match->length) $match->item(0)->nodeValue = $issue->getId();
+		if ($match->length) $match->item(0)->appendChild($doc->createTextNode($issue->getId()));
 		else {
 			$issueIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-id'));
-			$issueIdNode->nodeValue = $issue->getId();
+			$issueIdNode->appendChild($doc->createTextNode($issue->getId()));
 		}
 
 		// Issue cover page
@@ -374,7 +374,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$customMetaGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('custom-meta-group'));
 			$customMetaNode = $customMetaGroupNode->appendChild($doc->createElement('custom-meta'));
 			$metaNameNode = $customMetaNode->appendChild($doc->createElement('meta-name'));
-			$metaNameNode->nodeValue = 'issue-cover';
+			$metaNameNode->appendChild($doc->createTextNode('issue-cover'));
 			$metaValueNode = $customMetaNode->appendChild($doc->createElement('meta-value'));
 			$inlineGraphicNode = $metaValueNode->appendChild($doc->createElement('inline-graphic'));
 			$inlineGraphicNode->setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
@@ -408,11 +408,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$surname = method_exists($user, 'getLastName')?$user->getLastName():$user->getLocalizedFamilyName();
 				if ($surname != '') {
 					$surnameNode = $nameNode->appendChild($doc->createElement('surname'));
-					$surnameNode->nodeValue = $surname;
+					$surnameNode->appendChild($doc->createTextNode($surname));
 				}
 				$givenNamesNode = $nameNode->appendChild($doc->createElement('given-names'));
-				$givenNamesNode->nodeValue = method_exists($user, 'getFirstName')?$user->getFirstName():$user->getLocalizedGivenName();
-				if (method_exists($user, 'getMiddleName') && $s = $user->getMiddleName()) $givenNamesNode->nodeValue .= " $s";
+				$givenNamesNode->appendChild($doc->createTextNode(method_exists($user, 'getFirstName')?$user->getFirstName():$user->getLocalizedGivenName()));
+				if (method_exists($user, 'getMiddleName') && $s = $user->getMiddleName()) $givenNamesNode->appendChild($doc->createTextNode( " $s"));
 			}
 		}
 
