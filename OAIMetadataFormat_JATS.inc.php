@@ -21,7 +21,7 @@
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
 	 * Identify a candidate JATS file to expose via OAI.
-	 * @param $record DataObject
+	 * @param $record \PKP\core\DataObject
 	 * @return DOMDocument|null
 	 */
 	protected function _findJats($record) {
@@ -455,6 +455,13 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		if ($genre->getCategory() != GENRE_CATEGORY_DOCUMENT) return false;
 		if ($genre->getDependent()) return false;
 		if ($genre->getSupplementary()) return false;
+
+		// Ensure that the file looks like a JATS document.
+		$doc = new DOMDocument;
+		$doc->loadXML($fileService->fs->read($filepath));
+		$xpath = new DOMXPath($doc);
+		$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
+		if (!$articleMetaNode) return false;
 
 		return true;
 	}
