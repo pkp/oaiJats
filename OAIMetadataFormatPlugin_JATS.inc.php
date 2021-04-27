@@ -14,7 +14,7 @@
  * @brief JATS XML format plugin for OAI.
  */
 
-import('lib.pkp.classes.plugins.OAIMetadataFormatPlugin');
+use PKP\plugins\OAIMetadataFormatPlugin;
 
 class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	/**

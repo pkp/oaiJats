@@ -18,6 +18,8 @@
  * @brief OAI metadata format class -- JATS
  */
 
+use PKP\oai\OAIMetadataFormat;
+
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
 	 * Identify a candidate JATS file to expose via OAI.
