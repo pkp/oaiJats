@@ -18,8 +18,10 @@
  * @brief OAI metadata format class -- JATS
  */
 
+use PKP\submission\PKPSubmission;
+use PKP\submission\SubmissionFile;
 use PKP\oai\OAIMetadataFormat;
-
+ 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
 	 * Identify a candidate JATS file to expose via OAI.
@@ -43,7 +45,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// If no candidates were found, look in the layout area (unpublished content).
 		if (empty($candidateFiles)) {
 			$layoutFiles = Services::get('submissionFile')->getMany([
-				'fileStages' => [SUBMISSION_FILE_PRODUCTION_READY],
+				'fileStages' => [SubmissionFile::SUBMISSION_FILE_PRODUCTION_READY],
 				'submissionIds' => [$article->getId()]
 			]);
 			foreach ($layoutFiles as $layoutFile) {
@@ -359,11 +361,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Article sequence information
-		import('classes.submission.Submission'); // import STATUS_ constants
 		$publishedArticles = iterator_to_array(Services::get('submission')->getMany([
 			'contextId' => $journal->getId(),
 			'issueIds' => [$issue->getId()],
-			'status' => STATUS_PUBLISHED,
+			'status' => PKPSubmission::STATUS_PUBLISHED,
 		]));
 		$articleIds = array_map(function($publishedArticle) {
 			return $publishedArticle->getId();
