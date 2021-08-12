@@ -18,9 +18,11 @@
  * @brief OAI metadata format class -- JATS
  */
 
+use APP\facades\Repo;
 use PKP\submission\PKPSubmission;
 use PKP\submission\SubmissionFile;
 use PKP\oai\OAIMetadataFormat;
+use PKP\db\DAORegistry;
  
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
@@ -32,7 +34,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$article = $record->getData('article');
 		$galleys = $record->getData('galleys');
 
-		import('lib.pkp.classes.submission.SubmissionFile'); // SUBMISSION_FILE_... constants
 		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
 		$candidateFiles = [];
 
@@ -361,14 +362,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Article sequence information
-		$publishedArticles = iterator_to_array(Services::get('submission')->getMany([
-			'contextId' => $journal->getId(),
-			'issueIds' => [$issue->getId()],
-			'status' => PKPSubmission::STATUS_PUBLISHED,
-		]));
-		$articleIds = array_map(function($publishedArticle) {
-			return $publishedArticle->getId();
-		}, $publishedArticles);
+		$articleIds = Repo::submission()->getIds(Repo::submission()->getCollector()
+                    ->filterByContextIds([$journal->getId()])
+                    ->filterByIssueIds([$issue->getId()])
+                    ->filterByStatus([PKPSubmission::STATUS_PUBLISHED])
+                );
 		foreach (['volume', 'issue'] as $nodeName) {
 			$match = $xpath->query("//article/front/article-meta/$nodeName");
 			if ($match->length) {
