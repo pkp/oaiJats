@@ -362,11 +362,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Article sequence information
-		$articleIds = Repo::submission()->getIds(Repo::submission()->getCollector()
+		$articleIds = iterator_to_array(Repo::submission()->getIds(Repo::submission()->getCollector()
                     ->filterByContextIds([$journal->getId()])
                     ->filterByIssueIds([$issue->getId()])
                     ->filterByStatus([PKPSubmission::STATUS_PUBLISHED])
-                );
+                ));
 		foreach (['volume', 'issue'] as $nodeName) {
 			$match = $xpath->query("//article/front/article-meta/$nodeName");
 			if ($match->length) {
