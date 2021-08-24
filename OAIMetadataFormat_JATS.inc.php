@@ -81,11 +81,13 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$issue = $record->getData('issue');
 
 		// Check access
+		$request = Application::get()->getRequest();
 		import('classes.issue.IssueAction');
 		$issueAction = new IssueAction();
 		$subscriptionRequired = $issueAction->subscriptionRequired($issue, $journal);
 		$isSubscribedDomain = $issueAction->subscribedDomain(Application::get()->getRequest(), $journal, $issue->getId(), $article->getId());
-		if ($subscriptionRequired && !$isSubscribedDomain) {
+		$allowedPrePublicationAccess = $issueAction->allowedIssuePrePublicationAccess($journal, $request->getUser());
+		if ($subscriptionRequired && (!$allowedPrePublicationAccess && !$isSubscribedDomain)) {
 			$oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
 			exit();
 		}
