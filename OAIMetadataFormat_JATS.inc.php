@@ -315,6 +315,19 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$journalIdNode->appendChild($doc->createTextNode($journal->getPath()));
 		}
 
+		// Set article-id[publisher-id]
+		$match = $xpath->query("//article/front/article-meta/article-id[@pub-id-type='publisher-id']");
+		if ($match->length) {
+			$originalIdNode = $match->item(0)->firstChild;
+			if ($originalIdNode) {
+				$match->item(0)->replaceChild($doc->createTextNode($article->getId()), $originalIdNode);
+			}
+		} else {
+			$articleIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('article-id'));
+			$articleIdNode->setAttribute('pub-id-type', 'publisher-id');
+			$articleIdNode->appendChild($doc->createTextNode($article->getId()));
+		}
+
 		// Store the DOI
 		if ($doi = trim($article->getStoredPubId('doi'))) {
 			$match = $xpath->query("//article/front/article-meta/article-id[@pub-id-type='doi']");
