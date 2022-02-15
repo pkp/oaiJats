@@ -23,7 +23,7 @@ use PKP\submission\PKPSubmission;
 use PKP\submission\SubmissionFile;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
- 
+
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
 	 * Identify a candidate JATS file to expose via OAI.
@@ -318,6 +318,19 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$journalIdNode = $this->_addChildInOrder($journalMetaNode, $doc->createElement('journal-id'));
 			$journalIdNode->setAttribute('journal-id-type', 'publisher');
 			$journalIdNode->appendChild($doc->createTextNode($journal->getPath()));
+		}
+
+		// Set article-id[publisher-id]
+		$match = $xpath->query("//article/front/article-meta/article-id[@pub-id-type='publisher-id']");
+		if ($match->length) {
+			$originalIdNode = $match->item(0)->firstChild;
+			if ($originalIdNode) {
+				$match->item(0)->replaceChild($doc->createTextNode($article->getId()), $originalIdNode);
+			}
+		} else {
+			$articleIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('article-id'));
+			$articleIdNode->setAttribute('pub-id-type', 'publisher-id');
+			$articleIdNode->appendChild($doc->createTextNode($article->getId()));
 		}
 
 		// Store the DOI
