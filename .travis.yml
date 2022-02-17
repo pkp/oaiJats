@@ -12,6 +12,7 @@ sudo: required
 php:
   - 7.3
   - 7.4
+  - 8.0
 env:
   - APPLICATION=ojs BRANCH=stable-3_3_0 TEST=mysql
   - APPLICATION=ojs BRANCH=stable-3_3_0 TEST=pgsql
@@ -41,5 +42,7 @@ script:
   - wget -q -O - "http://localhost/index.php/publicknowledge/oai?verb=ListRecords&metadataPrefix=jats" | xmlstarlet sel -N x="https://jats.nlm.nih.gov/publishing/1.1/" -t -c "(//x:article)[1]" > jats.xml
   - python3 plugins/oaiMetadataFormats/oaiJats/validate.py jats.xml erudit-style-0.3.sch
 
-after_script:
+after_failure:
   - cat error.log
+  - sudo apt-get install sharutils
+  - tar cz cypress/screenshots | uuencode /dev/stdout
