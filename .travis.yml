@@ -1,6 +1,8 @@
 # @file
 # .travis.yml - PKP Plugins Integration
 
+dist: bionic
+os: linux
 language: php
 
 addons:
