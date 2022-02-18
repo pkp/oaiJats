@@ -20,9 +20,9 @@
 
 use APP\facades\Repo;
 use PKP\submission\PKPSubmission;
-use PKP\submission\SubmissionFile;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
+use PKP\submissionFile\SubmissionFile;
 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
@@ -34,21 +34,20 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$article = $record->getData('article');
 		$galleys = $record->getData('galleys');
 
-		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
 		$candidateFiles = [];
 
 		// First, look for candidates in the galleys area (published content).
 		foreach ($galleys as $galley) {
-			$galleyFile = $submissionFileDao->getById($galley->getData('submissionFileId'));
+			$galleyFile = Repo::submissionFile()->get($galley->getData('submissionFileId'));
 			if ($galleyFile && $this->_isCandidateFile($galleyFile)) $candidateFiles[] = $galleyFile;
 		}
 
 		// If no candidates were found, look in the layout area (unpublished content).
 		if (empty($candidateFiles)) {
-			$layoutFiles = Services::get('submissionFile')->getMany([
-				'fileStages' => [SubmissionFile::SUBMISSION_FILE_PRODUCTION_READY],
-				'submissionIds' => [$article->getId()]
-			]);
+			$layoutFiles = Repo::submissionFile()->getMany(Repo::submissionFile()->getCollector()
+				->filterByFileStages([SubmissionFile::SUBMISSION_FILE_PRODUCTION_READY])
+				->filterBySubmissionIds([$article->getId()])
+			);
 			foreach ($layoutFiles as $layoutFile) {
 				if ($this->_isCandidateFile($layoutFile)) $candidateFiles[] = $layoutFile;
 			}
