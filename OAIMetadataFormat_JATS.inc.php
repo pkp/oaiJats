@@ -282,9 +282,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		foreach ($submissionKeywordDao->getKeywords($publication->getId(), $journal->getSupportedLocales()) as $locale => $keywords) {
 			if (empty($keywords)) continue;
 
-			// Load the article.subject locale key in possible other languages
-			AppLocale::requireComponents(LOCALE_COMPONENT_APP_COMMON, $locale);
-
 			$kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
 			$kwdGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$kwdGroupNode->appendChild($doc->createElement('title'))->appendChild($doc->createTextNode(__('article.subject', [], $locale)));
