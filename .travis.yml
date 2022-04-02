@@ -4,8 +4,11 @@
 dist: bionic
 os: linux
 language: php
+python:
+  - 3.3 # Required by Javascript linter/builder
 
 addons:
+  chrome: beta
   postgresql: "9.5"
   apt:
     update: true
