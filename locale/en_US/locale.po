@@ -16,3 +16,12 @@ msgstr "JATS Metadata Format"
 
 msgid "plugins.oaiMetadata.jats.description"
 msgstr "Structures metadata in a way that is consistent with the JATS XML format."
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr "This plugin provides metadata to external services in the JATS XML format via the OAI-PMH interface. When used in conjunction with the JATS Template plugin, it can function even if JATS XML documents have not been uploaded into OJS."
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Settings"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Ignore uploaded JATS XML documents"
