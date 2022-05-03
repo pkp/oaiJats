@@ -451,7 +451,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	protected function _isCandidateFile($submissionFile) {
 		$fileService = Services::get('file');
 		$filepath = $fileService->get($submissionFile->getData('fileId'))->path;
-		$mimeType = $fileService->fs->getMimetype($filepath);
+		$mimeType = $fileService->fs->mimeType($filepath);
 
 		// The file type isn't XML.
 		if (!in_array($mimeType, ['application/xml', 'text/xml'])) return false;
