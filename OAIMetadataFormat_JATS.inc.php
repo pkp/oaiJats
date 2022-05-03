@@ -32,20 +32,25 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
 		$candidateFiles = [];
 
-		// First, look for candidates in the galleys area (published content).
-		foreach ($galleys as $galley) {
-			$galleyFile = $submissionFileDao->getById($galley->getData('submissionFileId'));
-			if ($galleyFile && $this->_isCandidateFile($galleyFile)) $candidateFiles[] = $galleyFile;
-		}
+		$plugin = PluginRegistry::getPlugin('oaiMetadataFormats', 'OAIMetadataFormatPlugin_JATS');
+		$forceJatsTemplate = $plugin->getSetting($article->getData('contextId'), 'forceJatsTemplate');
 
-		// If no candidates were found, look in the layout area (unpublished content).
-		if (empty($candidateFiles)) {
-			$layoutFiles = Services::get('submissionFile')->getMany([
-				'fileStages' => [SUBMISSION_FILE_PRODUCTION_READY],
-				'submissionIds' => [$article->getId()]
-			]);
-			foreach ($layoutFiles as $layoutFile) {
-				if ($this->_isCandidateFile($layoutFile)) $candidateFiles[] = $layoutFile;
+		// First, look for candidates in the galleys area (published content).
+		if (!$forceJatsTemplate) {
+			foreach ($galleys as $galley) {
+				$galleyFile = $submissionFileDao->getById($galley->getData('submissionFileId'));
+				if ($galleyFile && $this->_isCandidateFile($galleyFile)) $candidateFiles[] = $galleyFile;
+			}
+
+			// If no candidates were found, look in the layout area (unpublished content).
+			if (empty($candidateFiles)) {
+				$layoutFiles = Services::get('submissionFile')->getMany([
+					'fileStages' => [SUBMISSION_FILE_PRODUCTION_READY],
+					'submissionIds' => [$article->getId()]
+				]);
+				foreach ($layoutFiles as $layoutFile) {
+					if ($this->_isCandidateFile($layoutFile)) $candidateFiles[] = $layoutFile;
+				}
 			}
 		}
 
@@ -249,7 +254,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
 		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
 		$articleTitleText = $doc->createTextNode($article->getTitle($article->getLocale()));
-                $titleNode->appendChild($articleTitleText);
+		$titleNode->appendChild($articleTitleText);
 		if (!empty($subtitle = $article->getSubtitle($article->getLocale()))) {
 			$subtitleText = $doc->createTextNode($subtitle);
 			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
@@ -263,11 +268,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
 			$titleText = $doc->createTextNode($title);
-                        $titleNode->appendChild($titleText);
+			$titleNode->appendChild($titleText);
 			if (!empty($subtitle = $article->getSubtitle($locale))) {
 				$subtitleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-subtitle'));
 				$subtitleText = $doc->createTextNode($subtitle);
-                                $subtitleNode->appendChild($subtitleText);
+				$subtitleNode->appendChild($subtitleText);
 			}
 		}
 
