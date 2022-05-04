@@ -1,10 +1,12 @@
+```
 ===============================================
 === OAI JATS Plugin
 === Author: Alec Smecher <alec@smecher.bc.ca>
 ===============================================
+```
 
-About
------
+## About
+
 This plugin exposes JATS XML via the OAI-PMH interface.
 Note that it DOES NOT generate JATS XML itself -- it assumes that this will
 already be available. You can use a tool like Open Typesetting Stack
@@ -22,21 +24,20 @@ editorial practices ensure that the two data sets remain consistent rather than
 relying on the transformation built into this plugin.
 
 
-License
--------
+## License
+
 This software is published under the GNU GPLv3 license. See LICENSE for details.
 
+## System Requirements
 
-System Requirements
--------------------
 This plugin is intended to work with...
  - OJS 3.3.x
 
-Installation
-------------
+## Installation
+
 This plugin should be available from the Plugin Gallery within OJS.
 
-Configuration
--------------
+## Configuration
+
 We recommend that the following configuration elements be set in OJS...
  - ISSN
