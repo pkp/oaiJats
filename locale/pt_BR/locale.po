@@ -1,6 +1,7 @@
+# Diego José Macêdo <diegojmacedo@gmail.com>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-06-04 16:39+0000\n"
+"PO-Revision-Date: 2022-05-06 10:58+0000\n"
 "Last-Translator: Diego José Macêdo <diegojmacedo@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <http://translate.pkp.sfu.ca/projects/"
 "plugins/oai-jats-plugin/pt_BR/>\n"
@@ -12,9 +13,20 @@ msgstr ""
 "X-Generator: Weblate 3.9.1\n"
 
 msgid "plugins.oaiMetadata.jats.description"
-msgstr ""
-"Estruturas de metadados de uma forma que é consistente com o formato JATS "
-"XML."
+msgstr "Estrutura os metadados de forma consistente com o formato XML JATS."
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "Formato de Metadados do JATS"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Ignorar documentos XML JATS carregados"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Definições"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Este plugin fornece metadados para serviços externos no formato JATS XML por "
+"meio da interface OAI-PMH. Quando usado em conjunto com o plug-in JATS "
+"Template, ele pode funcionar mesmo se os documentos XML JATS não tiverem "
+"sido carregados no OJS."
