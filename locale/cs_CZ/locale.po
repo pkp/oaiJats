@@ -1,10 +1,11 @@
+# Jiří Dlouhý <jiri.dlouhy@czp.cuni.cz>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-07-23 06:47+0000\n"
+"PO-Revision-Date: 2022-05-06 10:58+0000\n"
 "Last-Translator: Jiří Dlouhý <jiri.dlouhy@czp.cuni.cz>\n"
 "Language-Team: Czech <http://translate.pkp.sfu.ca/projects/plugins/"
-"oai-jats-plugin/cs/>\n"
-"Language: cs\n"
+"oai-jats-plugin/cs_CZ/>\n"
+"Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,3 +17,16 @@ msgstr "Strukturuje metadata tak, aby odpovídala JATS XML formátu."
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "Formát metadat JATS"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Ignorovat nahrané dokumenty JATS XML"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Nastavení"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Tento zásuvný modul poskytuje externím službám metadata ve formátu JATS XML "
+"prostřednictvím rozhraní OAI-PMH. Při použití ve spojení se zásuvným modulem "
+"JATS Template může fungovat, i když dokumenty JATS XML nebyly do systému OJS "
+"nahrány."
