@@ -24,13 +24,13 @@ relying on the transformation built into this plugin.
 
 License
 -------
-This software is published under the GNU GPLv2 license. See LICENSE for details.
+This software is published under the GNU GPLv3 license. See LICENSE for details.
 
 
 System Requirements
 -------------------
 This plugin is intended to work with...
- - OJS 3.2.x
+ - OJS 3.3.x
 
 Installation
 ------------
