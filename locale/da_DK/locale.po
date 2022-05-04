@@ -1,9 +1,10 @@
+# Jesper B. Thestrup <jbt@kb.dk>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-02-07 10:35+0000\n"
-"Last-Translator: Niels Erik Frederiksen <nef@kb.dk>\n"
+"PO-Revision-Date: 2022-05-06 10:58+0000\n"
+"Last-Translator: Jesper B. Thestrup <jbt@kb.dk>\n"
 "Language-Team: Danish <http://translate.pkp.sfu.ca/projects/plugins/"
-"oai-jats-plugin/da/>\n"
+"oai-jats-plugin/da_DK/>\n"
 "Language: da_DK\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,3 +19,9 @@ msgstr ""
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "JATS metadata-format"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Indstillinger"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Ignorer uploadede JATS XML-dokumenter"
