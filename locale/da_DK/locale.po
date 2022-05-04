@@ -1,8 +1,9 @@
 # Jesper B. Thestrup <jbt@kb.dk>, 2022.
+# Alexandra Fogtmann-Schulz <alfo@kb.dk>, 2022.
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2022-05-06 10:58+0000\n"
-"Last-Translator: Jesper B. Thestrup <jbt@kb.dk>\n"
+"Last-Translator: Alexandra Fogtmann-Schulz <alfo@kb.dk>\n"
 "Language-Team: Danish <http://translate.pkp.sfu.ca/projects/plugins/"
 "oai-jats-plugin/da_DK/>\n"
 "Language: da_DK\n"
@@ -25,3 +26,9 @@ msgstr "Indstillinger"
 
 msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
 msgstr "Ignorer uploadede JATS XML-dokumenter"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Dette plugin leverer metadata til eksterne tjenester i JATS XML-formatet via "
+"OAI-PMH-grænsefladen. Når det bruges sammen med JATS Template pluginnet, kan "
+"det fungere, selvom JATS XML dokumenter ikke er blevet uploadet til OJS."
