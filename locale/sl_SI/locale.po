@@ -1,10 +1,11 @@
+# Primož Svetek <primoz.svetek@gmail.com>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-02-06 09:27+0000\n"
+"PO-Revision-Date: 2022-05-06 10:58+0000\n"
 "Last-Translator: Primož Svetek <primoz.svetek@gmail.com>\n"
 "Language-Team: Slovenian <http://translate.pkp.sfu.ca/projects/plugins/"
-"oai-jats-plugin/sl/>\n"
-"Language: sl\n"
+"oai-jats-plugin/sl_SI/>\n"
+"Language: sl_SI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -17,3 +18,15 @@ msgstr "Uredi metapodatke na način, ki je skladen z JATS XML obliko."
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "JATS oblika metapodatkov"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Zanemari naložene JATS XML dokumente"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Nastavitve"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Ta vtičnik zagotavlja metapodatke za zunanje servise v JATS XML obliki preko "
+"uporabe OAI-PMH vmesnika. Če se uporablja v povezavi z vitčnikom za JATS "
+"predlogo, lahko deluje tudi, če JATS XML dokumenti niso bili naloženi na OJS."
