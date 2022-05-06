@@ -1,7 +1,7 @@
 # Cyril Kamburov <cc@intermedia.bg>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-04-01 09:51+0000\n"
+"PO-Revision-Date: 2022-05-06 10:58+0000\n"
 "Last-Translator: Cyril Kamburov <cc@intermedia.bg>\n"
 "Language-Team: Bulgarian <http://translate.pkp.sfu.ca/projects/plugins/"
 "oai-jats-plugin/bg_BG/>\n"
@@ -18,3 +18,16 @@ msgstr ""
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "Формат на метаданни JATS"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Игнориране на качените JATS XML документи"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Настройки"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Тази добавка (плъгин) предоставя метаданни на външни услуги във формат JATS "
+"XML чрез интерфейса OAI-PMH. Когато се използва във връзка с приставката "
+"JATS Template, тя може да функционира дори ако JATS XML документи не са "
+"качени в OJS."
