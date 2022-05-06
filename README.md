@@ -5,7 +5,7 @@
 ===============================================
 ```
 
-[![Build Status](https://travis-ci.org/pkp/oaiJats.svg?branch=main)](https://travis-ci.org/pkp/oaiJats)
+[![Build Status](https://travis-ci.org/pkp/oaiJats.svg?branch=stable-3_3_0)](https://travis-ci.org/pkp/oaiJats)
 
 ## About
 
