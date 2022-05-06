@@ -5,6 +5,8 @@
 ===============================================
 ```
 
+[![Build Status](https://travis-ci.org/pkp/oaiJats.svg?branch=main)](https://travis-ci.org/pkp/oaiJats)
+
 ## About
 
 This plugin exposes JATS XML via the OAI-PMH interface.
