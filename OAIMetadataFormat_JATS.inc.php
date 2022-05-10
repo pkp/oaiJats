@@ -279,7 +279,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Set the article keywords.
 		$keywordGroupNode = $xpath->query('//article/front/article-meta/kwd-group')->item(0);
 		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
-		foreach ($articleMetaNode->getElementsByTagName('kwd-group') as $kwdGroupNode) $articleMetaNode->removeChild($kwdGroupNode);
+		while (($kwdGroupNodes = $articleMetaNode->getElementsByTagName('kwd-group'))->length !== 0) {
+			$articleMetaNode->removeChild($kwdGroupNodes->item(0));
+		}
 		foreach ($submissionKeywordDao->getKeywords($publication->getId(), $journal->getSupportedLocales()) as $locale => $keywords) {
 			if (empty($keywords)) continue;
 
