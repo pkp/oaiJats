@@ -1,6 +1,7 @@
+# Hüseyin Körpeoğlu <yoruyenturk@hotmail.com>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-06-12 08:39+0000\n"
+"PO-Revision-Date: 2022-05-13 07:58+0000\n"
 "Last-Translator: Hüseyin Körpeoğlu <yoruyenturk@hotmail.com>\n"
 "Language-Team: Turkish <http://translate.pkp.sfu.ca/projects/plugins/"
 "oai-jats-plugin/tr_TR/>\n"
@@ -16,3 +17,16 @@ msgstr "Üstverileri JATS XML biçimiyle tutarlı bir şekilde yapılandırır."
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "JATS Üstveri Formatı"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Yüklenen JATS XML belgelerini yoksay"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Ayarlar"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Bu eklenti, OAI-PMH arayüzü aracılığıyla JATS XML formatında harici "
+"hizmetlere meta veriler sağlar. JATS Template eklentisi ile birlikte "
+"kullanıldığında, JATS XML belgeleri sisteme yüklenmemiş olsa bile "
+"çalışabilir."
