@@ -1,9 +1,10 @@
+# Ramli Baharuddin <ramli.baharuddin@relawanjurnal.id>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-02-08 04:13+0000\n"
+"PO-Revision-Date: 2022-05-13 07:58+0000\n"
 "Last-Translator: Ramli Baharuddin <ramli.baharuddin@relawanjurnal.id>\n"
 "Language-Team: Indonesian <http://translate.pkp.sfu.ca/projects/plugins/"
-"oai-jats-plugin/id/>\n"
+"oai-jats-plugin/id_ID/>\n"
 "Language: id_ID\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,3 +17,15 @@ msgstr "Atur metadata secara yang konsisten dengan format JTS XML."
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "Format Metadata JATS"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Abaikan dokumen XML JATS yang diunggah"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Pengaturan"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Plugin ini menyiapkan metadata untuk layanan eksternal dalam format XML JATS "
+"melalui antarmuka OAI-PMH. Bila digunakan sesuai dengan plugin Templet JATS, "
+"plugin ini dapat bekerja meskipun dokumen XML JATS belum diunggah ke OJS."
