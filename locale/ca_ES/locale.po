@@ -1,9 +1,10 @@
+# Jordi LC <jordi.lacruz@uab.cat>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-05-01 11:38+0000\n"
+"PO-Revision-Date: 2022-07-01 09:31+0000\n"
 "Last-Translator: Jordi LC <jordi.lacruz@uab.cat>\n"
 "Language-Team: Catalan <http://translate.pkp.sfu.ca/projects/plugins/"
-"oai-jats-plugin/ca/>\n"
+"oai-jats-plugin/ca_ES/>\n"
 "Language: ca_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,3 +19,9 @@ msgstr ""
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "Format de metadades JATS"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Ignorar els documents JATS XML carregats"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Configuració"
