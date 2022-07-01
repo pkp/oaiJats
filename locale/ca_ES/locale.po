@@ -1,7 +1,7 @@
 # Jordi LC <jordi.lacruz@uab.cat>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-07-01 09:31+0000\n"
+"PO-Revision-Date: 2022-07-02 03:52+0000\n"
 "Last-Translator: Jordi LC <jordi.lacruz@uab.cat>\n"
 "Language-Team: Catalan <http://translate.pkp.sfu.ca/projects/plugins/"
 "oai-jats-plugin/ca_ES/>\n"
@@ -25,3 +25,10 @@ msgstr "Ignorar els documents JATS XML carregats"
 
 msgid "plugins.oaiMetadataFormats.oaiJats.settings"
 msgstr "Configuració"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Aquest mòdul proporciona metadades a serveis externs en format JATS XML a "
+"través de la interfície OAI-PMH. Quan s'utilitza en combinació amb el mòdul "
+"JATS Template, pot funcionar fins i tot si els documents JATS XML no han "
+"estat carregats en l'OJS."
