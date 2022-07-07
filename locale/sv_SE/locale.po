@@ -1,8 +1,9 @@
 # Edvin Erdtman <edvin.erdtman@liu.se>, 2021.
+# Viveka Svensson <viveka.svensson@lnu.se>, 2022.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-09-13 08:14+0000\n"
-"Last-Translator: Edvin Erdtman <edvin.erdtman@liu.se>\n"
+"PO-Revision-Date: 2022-07-08 01:56+0000\n"
+"Last-Translator: Viveka Svensson <viveka.svensson@lnu.se>\n"
 "Language-Team: Swedish <http://translate.pkp.sfu.ca/projects/plugins/"
 "oai-jats-plugin/sv_SE/>\n"
 "Language: sv_SE\n"
@@ -18,3 +19,16 @@ msgstr ""
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "JATS metadataformat"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Ignorera de uppladdade JATS XML dokumenten"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Inställningar"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Det här pluginet levererar metadata till externa tjänster i JATS XML format "
+"via OAI-PMH gränssnitt. När det används tillsammans med JATS Template "
+"pluginet, kan det fungera, även om JATS XML dokumenten inte har laddads upp "
+"i OJS."
