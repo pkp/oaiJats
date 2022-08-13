@@ -1,28 +1,30 @@
 <?php
 
 /**
- * @defgroup oai_format_jats
- */
-
-/**
- * @file OAIMetadataFormat_JATS.inc.php
+ * @file OAIMetadataFormat_JATS.php
  *
  * Copyright (c) 2013-2022 Simon Fraser University
  * Copyright (c) 2003-2022 John Willinsky
  * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @class OAIMetadataFormat_JATS
- * @ingroup oai_format
  * @see OAI
  *
  * @brief OAI metadata format class -- JATS
  */
+
+namespace APP\plugins\oaiMetadataFormats\oaiJats;
 
 use APP\facades\Repo;
 use PKP\submission\PKPSubmission;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
 use PKP\submissionFile\SubmissionFile;
+use APP\core\Application;
+use APP\issue\IssueAction;
+use PKP\plugins\PluginRegistry;
+use APP\core\Services;
+use PKP\plugins\Hook;
 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
@@ -59,7 +61,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		$doc = null;
-		HookRegistry::call('OAIMetadataFormat_JATS::findJats', [&$this, &$record, &$candidateFiles, &$doc]);
+		Hook::call('OAIMetadataFormat_JATS::findJats', [&$this, &$record, &$candidateFiles, &$doc]);
 
 		// If no candidate files were located, return the null XML.
 		if (!$doc && empty($candidateFiles)) {
@@ -151,7 +153,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 * @param $issue Issue
 	 */
 	protected function _mungeMetadata($doc, $journal, $article, $section, $issue) {
-		$xpath = new DOMXPath($doc);
+		$xpath = new \DOMXPath($doc);
 		$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
 		$journalMetaNode = $xpath->query('//article/front/journal-meta')->item(0);
 		if (!$journalMetaNode) {
@@ -298,16 +300,16 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Set the article abstract.
 		static $purifier;
 		if (!$purifier) {
-			$config = HTMLPurifier_Config::createDefault();
+			$config = \HTMLPurifier_Config::createDefault();
 			$config->set('HTML.Allowed', 'p');
 			$config->set('Cache.SerializerPath', 'cache');
-			$purifier = new HTMLPurifier($config);
+			$purifier = new \HTMLPurifier($config);
 		}
 		foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) $articleMetaNode->removeChild($abstractNode);
 		foreach ((array) $publication->getData('abstract') as $locale => $abstract) {
 			if (empty($abstract)) continue;
 			$isPrimary = $locale == $article->getLocale();
-			$abstractDoc = new DOMDocument;
+			$abstractDoc = new \DOMDocument;
 			if (strpos($abstract, '<p>')===null) $abstract = "<p>$abstract</p>";
 			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $purifier->purify($abstract) . ($isPrimary?'</abstract>':'</trans-abstract>'));
 			$abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($abstractDoc->documentElement, true));
@@ -476,9 +478,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		if ($genre->getSupplementary()) return false;
 
 		// Ensure that the file looks like a JATS document.
-		$doc = new DOMDocument;
+		$doc = new \DOMDocument;
 		$doc->loadXML($fileService->fs->read($filepath));
-		$xpath = new DOMXPath($doc);
+		$xpath = new \DOMXPath($doc);
 		$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
 		if (!$articleMetaNode) return false;
 

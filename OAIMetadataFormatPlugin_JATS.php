@@ -1,20 +1,24 @@
 <?php
 
 /**
- * @file OAIMetadataFormatPlugin_JATS.inc.php
+ * @file OAIMetadataFormatPlugin_JATS.php
  *
  * Copyright (c) 2014-2022 Simon Fraser University
  * Copyright (c) 2003-2022 John Willinsky
  * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @class OAIMetadataFormatPlugin_JATS
- * @ingroup oai_format_jats
  * @see OAI
  *
  * @brief JATS XML format plugin for OAI.
  */
 
+namespace APP\plugins\oaiMetadataFormats\oaiJats;
+
 use PKP\plugins\OAIMetadataFormatPlugin;
+use PKP\core\PKPApplication;
+use PKP\linkAction\request\AjaxModal;
+use PKP\linkAction\LinkAction;
 
 class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	/**
@@ -83,7 +87,6 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	 */
 	public function getActions($request, $verb) {
 		$router = $request->getRouter();
-		import('lib.pkp.classes.linkAction.request.AjaxModal');
 		return array_merge(
 			$this->getEnabled()?[
 				new LinkAction(
@@ -127,7 +130,7 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	}
 
 	function getFormatClass() {
-		return 'OAIMetadataFormat_JATS';
+		return '\APP\plugins\oaiMetadataFormats\oaiJats\OAIMetadataFormat_JATS';
 	}
 
 	static function getMetadataPrefix() {

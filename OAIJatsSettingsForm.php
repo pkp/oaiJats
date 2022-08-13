@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file plugins/generic/webFeed/OAIJatsSettingsForm.inc.php
+ * @file OAIJatsSettingsForm.php
  *
  * Copyright (c) 2014-2022 Simon Fraser University
  * Copyright (c) 2003-2022 John Willinsky
@@ -13,9 +13,11 @@
  * @brief Form for managers to modify web feeds plugin settings
  */
 
-import('lib.pkp.classes.form.Form');
+namespace APP\plugins\oaiMetadataFormats\oaiJats;
 
-class OAIJatsSettingsForm extends Form {
+use APP\template\TemplateManager;
+
+class OAIJatsSettingsForm extends \PKP\form\Form {
 
 	/** @var int Associated context ID */
 	private $_contextId;
