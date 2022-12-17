@@ -50,10 +50,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 			// If no candidates were found, look in the layout area (unpublished content).
 			if (empty($candidateFiles)) {
-				$layoutFiles = Repo::submissionFile()->getMany(Repo::submissionFile()->getCollector()
+				$layoutFiles = Repo::submissionFile()->getCollector()
 					->filterByFileStages([SubmissionFile::SUBMISSION_FILE_PRODUCTION_READY])
 					->filterBySubmissionIds([$article->getId()])
-				);
+					->getMany();
+				
 				foreach ($layoutFiles as $layoutFile) {
 					if ($this->_isCandidateFile($layoutFile)) $candidateFiles[] = $layoutFile;
 				}
