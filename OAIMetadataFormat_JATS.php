@@ -424,8 +424,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Editorial team
-		$userGroupDao = DAORegistry::getDAO('UserGroupDAO');
-		$userGroups = $userGroupDao->getByContextId($journal->getId());
+		$userGroups = Repo::userGroup()->getCollector()->filterByContextIds([$journal->getId()])->getMany();
 		$journalMetaNode = $xpath->query('//article/front/journal-meta')->item(0);
 		$contribGroupNode = $this->_addChildInOrder($journalMetaNode, $doc->createElement('contrib-group'));
 		$keyContribTypeMapping = [
@@ -433,11 +432,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			'default.groups.name.editor' => 'editor',
 			'default.groups.name.sectionEditor' => 'secteditor',
 		];
-		while ($userGroup = $userGroups->next()) {
+		foreach ($userGroups as $userGroup) {
 			if (!isset($keyContribTypeMapping[$userGroup->getData('nameLocaleKey')])) continue;
 
-			$users = $userGroupDao->getUsersById($userGroup->getId());
-			while ($user = $users->next()) {
+			$users = Repo::user()->getCollector()->filterByUserGroupIds([$userGroup->getId()])->getMany();
+			foreach ($users as $user) {
 				$contribNode = $contribGroupNode->appendChild($doc->createElement('contrib'));
 				$contribNode->setAttribute('contrib-type', $keyContribTypeMapping[$userGroup->getData('nameLocaleKey')]);
 				$nameNode = $contribNode->appendChild($doc->createElement('name'));
