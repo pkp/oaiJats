@@ -1,19 +1,33 @@
 # Studiorimau <studiorimau@gmail.com>, 2021.
+# Mohamad Shabilullah <shabilhamid91@gmail.com>, 2023.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-10-05 11:06+0000\n"
-"Last-Translator: Studiorimau <studiorimau@gmail.com>\n"
+"PO-Revision-Date: 2023-02-09 13:48+0000\n"
+"Last-Translator: Mohamad Shabilullah <shabilhamid91@gmail.com>\n"
 "Language-Team: Malay <http://translate.pkp.sfu.ca/projects/plugins/"
-"oai-jats-plugin/ms/>\n"
-"Language: ms\n"
+"oai-jats-plugin/ms_MY/>\n"
+"Language: ms_MY\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.9.1\n"
+"X-Generator: Weblate 4.13.1\n"
 
 msgid "plugins.oaiMetadata.jats.description"
 msgstr "Menyusun metadata dengan cara yang selaras dengan format JATS XML."
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "Format Metadata JATS"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "tetapan"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Pemalam ini menyediakan metadata kepada perkhidmatan luaran dalam format XML "
+"JATS melalui antara muka OAI-PMH. Apabila digunakan bersama dengan pemalam "
+"Templat JATS, ia boleh berfungsi walaupun dokumen XML JATS belum dimuat naik "
+"ke dalam OJS."
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Abaikan dokumen XML JATS yang dimuat naik"
