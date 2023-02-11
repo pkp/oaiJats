@@ -260,25 +260,38 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		while ($titleGroupNode->hasChildNodes()) $titleGroupNode->removeChild($titleGroupNode->firstChild);
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
 		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
-		$articleTitleText = $doc->createTextNode($article->getTitle($article->getLocale()));
+		$articleTitleText = $doc->createTextNode(
+			$this->mapHtmlTagsForTitle(
+				$article->getCurrentPublication()->getLocalizedTitle(
+					$article->getLocale(), 
+					'html'
+				)
+			)
+		);
 		$titleNode->appendChild($articleTitleText);
-		if (!empty($subtitle = $article->getSubtitle($article->getLocale()))) {
-			$subtitleText = $doc->createTextNode($subtitle);
+		if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($article->getLocale(), 'html'))) {
+			$subtitleText = $doc->createTextNode($this->mapHtmlTagsForTitle($subtitle));
 			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
 			$subtitleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
 			$subtitleNode->appendChild($subtitleText);
 		}
-		foreach ($article->getTitle(null) as $locale => $title) {
-			if ($locale == $article->getLocale()) continue;
-			if (trim($title) === '') continue;
+		foreach ($article->getCurrentPublication()->getTitles(null, 'html') as $locale => $title) {
+			if ($locale == $article->getLocale()) {
+				continue;
+			}
+			
+			if ( trim($title = $this->mapHtmlTagsForTitle($title)) === '' ) {
+				continue;
+			}
+			
 			$transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
 			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
 			$titleText = $doc->createTextNode($title);
 			$titleNode->appendChild($titleText);
-			if (!empty($subtitle = $article->getSubtitle($locale))) {
+			if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($locale, 'html'))) {
 				$subtitleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-subtitle'));
-				$subtitleText = $doc->createTextNode($subtitle);
+				$subtitleText = $doc->createTextNode($this->mapHtmlTagsForTitle($subtitle));
 				$subtitleNode->appendChild($subtitleText);
 			}
 		}
@@ -486,5 +499,26 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		if (!$articleMetaNode) return false;
 
 		return true;
+	}
+
+	/**
+	 * Map the specific HTML tags in title/ sub title for JATS schema compability
+	 * @see https://jats.nlm.nih.gov/publishing/0.4/xsd/JATS-journalpublishing0.xsd
+	 * 
+	 * @param  string $htmlTitle The submission title/sub title as in HTML 
+	 * @return string
+	 */
+	public function mapHtmlTagsForTitle(string $htmlTitle): string
+	{
+		$mappings = [
+			'<b>' 	=> '<bold>',
+			'</b>' 	=> '</bold>',
+			'<i>' 	=> '<italic>',
+			'</i>' 	=> '</italic>',
+			'<u>' 	=> '<underline>',
+			'</u>' 	=> '</underline>',
+		];
+
+		return str_replace(array_keys($mappings), array_values($mappings), $htmlTitle);
 	}
 }
