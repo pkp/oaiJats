@@ -260,7 +260,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		while ($titleGroupNode->hasChildNodes()) $titleGroupNode->removeChild($titleGroupNode->firstChild);
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
 		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
-		$articleTitleText = $doc->createTextNode(
+		
+		$articleTitleHtml = $doc->createDocumentFragment();
+		$articleTitleHtml->appendXML(
 			$this->mapHtmlTagsForTitle(
 				$article->getCurrentPublication()->getLocalizedTitle(
 					$article->getLocale(), 
@@ -268,14 +270,19 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				)
 			)
 		);
-		$titleNode->appendChild($articleTitleText);
+		$titleNode->appendChild($articleTitleHtml);
+
 		if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($article->getLocale(), 'html'))) {
-			$subtitleText = $doc->createTextNode($this->mapHtmlTagsForTitle($subtitle));
+			
+			$subtitleHtml = $doc->createDocumentFragment();
+			$subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
+			
 			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
 			$subtitleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
-			$subtitleNode->appendChild($subtitleText);
+
+			$subtitleNode->appendChild($subtitleHtml);
 		}
-		foreach ($article->getCurrentPublication()->getTitles(null, 'html') as $locale => $title) {
+		foreach ($article->getCurrentPublication()->getTitles('html') as $locale => $title) {
 			if ($locale == $article->getLocale()) {
 				continue;
 			}
@@ -287,12 +294,16 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
 			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
-			$titleText = $doc->createTextNode($title);
-			$titleNode->appendChild($titleText);
+
+			$titleHtml = $doc->createDocumentFragment();
+			$titleHtml->appendXML($title);
+			$titleNode->appendChild($titleHtml);
+
 			if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($locale, 'html'))) {
 				$subtitleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-subtitle'));
-				$subtitleText = $doc->createTextNode($this->mapHtmlTagsForTitle($subtitle));
-				$subtitleNode->appendChild($subtitleText);
+				$subtitleHtml = $doc->createDocumentFragment();
+				$subtitleHtml->appendXML($subtitle);
+				$subtitleNode->appendChild($subtitleHtml);
 			}
 		}
 
