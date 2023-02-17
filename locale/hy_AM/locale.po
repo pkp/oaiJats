@@ -1,0 +1,33 @@
+# Artashes Mirzoyan <amirzoyan@sci.am>, 2022.
+# Tigran Zargaryan <tigran@flib.sci.am>, 2022.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2022-07-02 03:52+0000\n"
+"Last-Translator: Tigran Zargaryan <tigran@flib.sci.am>\n"
+"Language-Team: Armenian <http://translate.pkp.sfu.ca/projects/plugins/"
+"oai-jats-plugin/hy_AM/>\n"
+"Language: hy_AM\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9.1\n"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Անտեսեք վերբեռնված JATS XML փաստաթղթերը"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Կարգավորումներ"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Այս հավելվածը մետատվյալներ է տրամադրում արտաքին ծառայություններին JATS XML "
+"ձևաչափով OAI-PMH միջերեսի միջոցով: Երբ օգտագործվում է JATS Template "
+"հավելվածի հետ համատեղ, այն կարող է գործել նույնիսկ եթե JATS XML փաստաթղթերը "
+"չեն վերբեռնվել OJS:"
+
+msgid "plugins.oaiMetadata.jats.description"
+msgstr "Կառուցում է մետատվյալներն այնպես, որ համահունչ են JATS XML ձևաչափին:"
+
+msgid "plugins.oaiMetadata.jats.displayName"
+msgstr "JATS մետատվյալների ձևաչափ"
