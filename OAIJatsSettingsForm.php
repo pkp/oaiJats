@@ -16,6 +16,8 @@
 namespace APP\plugins\oaiMetadataFormats\oaiJats;
 
 use APP\template\TemplateManager;
+use PKP\form\validation\FormValidatorPost;
+use PKP\form\validation\FormValidatorCSRF;
 
 class OAIJatsSettingsForm extends \PKP\form\Form {
 

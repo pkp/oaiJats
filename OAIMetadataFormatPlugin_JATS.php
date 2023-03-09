@@ -17,8 +17,10 @@ namespace APP\plugins\oaiMetadataFormats\oaiJats;
 
 use PKP\plugins\OAIMetadataFormatPlugin;
 use PKP\core\PKPApplication;
+use PKP\core\JSONMessage;
 use PKP\linkAction\request\AjaxModal;
 use PKP\linkAction\LinkAction;
+use APP\notification\NotificationManager;
 
 class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	/**
@@ -109,8 +111,6 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	public function manage($args, $request) {
 		switch ($request->getUserVar('verb')) {
 			case 'settings':
-				AppLocale::requireComponents(LOCALE_COMPONENT_APP_COMMON,  LOCALE_COMPONENT_PKP_MANAGER);
-				$this->import('OAIJatsSettingsForm');
 				$form = new OAIJatsSettingsForm($this, $request->getContext()->getId());
 
 				if ($request->getUserVar('save')) {
