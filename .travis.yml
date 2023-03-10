@@ -4,6 +4,8 @@
 dist: bionic
 os: linux
 language: php
+python:
+  - "3.8"
 
 addons:
   postgresql: "9.5"
