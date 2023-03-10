@@ -58,7 +58,7 @@ script:
 
   # Fetch a JATS document through oaiJats, removing the OAI-PMH wrapper using xmlstarlet
   - wget -q -O - "http://localhost/index.php/publicknowledge/oai?verb=ListRecords&metadataPrefix=jats" | xmlstarlet sel -N x="https://jats.nlm.nih.gov/publishing/1.1/" -t -c "(//x:article)[1]" > jats.xml
-  - python plugins/oaiMetadataFormats/oaiJats/validate.py jats.xml erudit-style-0.3.sch
+  - python3 plugins/oaiMetadataFormats/oaiJats/validate.py jats.xml erudit-style-0.3.sch
 
 after_failure:
   - cat error.log
