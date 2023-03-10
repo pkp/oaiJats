@@ -32,8 +32,7 @@ install:
   - source lib/pkp/tools/travis/prepare-tests.sh
   - lib/pkp/tools/travis/prepare-webserver.sh
   # Install Schematron validation and XML munging toolset
-  - sudo apt-get install xmlstarlet python3-pip
-  - sudo pip3 install --upgrade lxml
+  - sudo apt-get install xmlstarlet python3-lxml
   - wget -q "https://eruditps.docs.erudit.org/_downloads/f0f9fb861e01a47df2ce48f588524d29/erudit-style-0.3.sch"
   # Build/install dependencies
   - lib/pkp/tools/travis/install-composer-dependencies.sh
