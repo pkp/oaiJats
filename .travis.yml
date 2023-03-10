@@ -51,7 +51,7 @@ script:
   - php lib/pkp/tools/installPluginVersion.php plugins/oaiMetadataFormats/oaiJats/version.xml
 
   # Run Cypress tests
-  - $(npm bin)/cypress run --config integrationFolder=plugins/oaiMetadataFormats/oaiJats/cypress/tests
+  - $(npm bin)/cypress run --config '{"specPattern":["plugins/oaiMetadataFormats/oaiJats/cypress/tests/functional/*.cy.js"]}'
 
   # Fetch a JATS document through oaiJats, removing the OAI-PMH wrapper using xmlstarlet
   - wget -q -O - "http://localhost/index.php/publicknowledge/oai?verb=ListRecords&metadataPrefix=jats" | xmlstarlet sel -N x="https://jats.nlm.nih.gov/publishing/1.1/" -t -c "(//x:article)[1]" > jats.xml
