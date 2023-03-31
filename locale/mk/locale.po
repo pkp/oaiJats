@@ -1,15 +1,16 @@
+# Teodora Fildishevska <t.fildishevska@gmail.com>, 2023.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-02-06 04:07+0000\n"
+"PO-Revision-Date: 2023-03-15 13:48+0000\n"
 "Last-Translator: Teodora Fildishevska <t.fildishevska@gmail.com>\n"
 "Language-Team: Macedonian <http://translate.pkp.sfu.ca/projects/plugins/"
-"oai-jats-plugin/mk_MK/>\n"
-"Language: mk_MK\n"
+"oai-jats-plugin/mk/>\n"
+"Language: mk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n==1 || n%10==1 ? 0 : 1;\n"
-"X-Generator: Weblate 3.9.1\n"
+"X-Generator: Weblate 4.13.1\n"
 
 msgid "plugins.oaiMetadata.jats.description"
 msgstr ""
@@ -17,3 +18,16 @@ msgstr ""
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "JATS формат на метаподатоци"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Поставки"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Игнорирајте ги поставените JATS XML документи"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Овој додаток обезбедува метаподатоци за надворешни услуги во формат JATS XML "
+"преку интерфејсот OAI-PMH. Кога се користи заедно со приклучокот JATS "
+"Template, може да функционира дури и ако документите JATS XML не се "
+"поставени во OJS."
