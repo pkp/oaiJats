@@ -302,7 +302,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($locale, 'html'))) {
 				$subtitleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-subtitle'));
 				$subtitleHtml = $doc->createDocumentFragment();
-				$subtitleHtml->appendXML($subtitle);
+				$subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
 				$subtitleNode->appendChild($subtitleHtml);
 			}
 		}
