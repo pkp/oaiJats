@@ -25,6 +25,8 @@ use APP\issue\IssueAction;
 use PKP\plugins\PluginRegistry;
 use APP\core\Services;
 use PKP\plugins\Hook;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
@@ -323,12 +325,13 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Set the article abstract.
-		static $purifier;
-		if (!$purifier) {
-			$config = \HTMLPurifier_Config::createDefault();
-			$config->set('HTML.Allowed', 'p');
-			$config->set('Cache.SerializerPath', 'cache');
-			$purifier = new \HTMLPurifier($config);
+		static $config = null, $sanitizer = null;
+		if (!$sanitizer) {
+			$config = (new HtmlSanitizerConfig())
+				->allowLinkSchemes(['https', 'http', 'mailto'])
+				->allowMediaSchemes(['https', 'http'])
+				->allowElement('p');
+			$sanitizer = new HTMLSanitizer($config);
 		}
 		foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) $articleMetaNode->removeChild($abstractNode);
 		foreach ((array) $publication->getData('abstract') as $locale => $abstract) {
@@ -336,7 +339,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$isPrimary = $locale == $article->getLocale();
 			$abstractDoc = new \DOMDocument;
 			if (strpos($abstract, '<p>')===null) $abstract = "<p>$abstract</p>";
-			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $purifier->purify($abstract) . ($isPrimary?'</abstract>':'</trans-abstract>'));
+			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $sanitizer->sanitize($abstract) . ($isPrimary?'</abstract>':'</trans-abstract>'));
 			$abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($abstractDoc->documentElement, true));
 			if (!$isPrimary) $abstractNode->setAttribute('xml:lang', substr($locale,0,2));
 		}
