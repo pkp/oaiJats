@@ -340,7 +340,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$isPrimary = $locale == $article->getLocale();
 			$abstractDoc = new \DOMDocument;
 			if (strpos($abstract, '<p>')===null) $abstract = "<p>$abstract</p>";
-			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . PKPString::sanitizeHtmlString($abstract, 'p', $sanitizer) . ($isPrimary?'</abstract>':'</trans-abstract>'));
+			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $sanitizer->sanitize(strip_tags($abstract, 'p')) . ($isPrimary?'</abstract>':'</trans-abstract>'));
 			$abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($abstractDoc->documentElement, true));
 			if (!$isPrimary) $abstractNode->setAttribute('xml:lang', substr($locale,0,2));
 		}
