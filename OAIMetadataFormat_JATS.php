@@ -327,12 +327,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Set the article abstract.
 		static $sanitizer = null;
 		if (!$sanitizer) {
-			$sanitizer = new HTMLSanitizer(
-				(new HtmlSanitizerConfig())
-					->allowLinkSchemes(['https', 'http', 'mailto'])
-					->allowMediaSchemes(['https', 'http'])
-					->allowElement('p')
-			);
+			$sanitizer = new \PKP\core\PKPHtmlSanitizer('p,a');
 		}
 		foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) $articleMetaNode->removeChild($abstractNode);
 		foreach ((array) $publication->getData('abstract') as $locale => $abstract) {
@@ -340,7 +335,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$isPrimary = $locale == $article->getLocale();
 			$abstractDoc = new \DOMDocument;
 			if (strpos($abstract, '<p>')===null) $abstract = "<p>$abstract</p>";
-			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $sanitizer->sanitize(strip_tags($abstract, 'p')) . ($isPrimary?'</abstract>':'</trans-abstract>'));
+			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $sanitizer->sanitize($abstract) . ($isPrimary?'</abstract>':'</trans-abstract>'));
 			$abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($abstractDoc->documentElement, true));
 			if (!$isPrimary) $abstractNode->setAttribute('xml:lang', substr($locale,0,2));
 		}
