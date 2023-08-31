@@ -327,7 +327,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Set the article abstract.
 		static $sanitizer = null;
 		if (!$sanitizer) {
-			$sanitizer = new \PKP\core\PKPHtmlSanitizer('p,a');
+			$sanitizer = new \PKP\core\PKPHtmlSanitizer('p');
 		}
 		foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) $articleMetaNode->removeChild($abstractNode);
 		foreach ((array) $publication->getData('abstract') as $locale => $abstract) {
