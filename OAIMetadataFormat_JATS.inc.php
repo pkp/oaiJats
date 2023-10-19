@@ -385,13 +385,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			'issueIds' => [$issue->getId()],
 			'status' => STATUS_PUBLISHED,
 		]));
-		$articleIds = array_map(function($publishedArticle) {
-			return $publishedArticle->getId();
-		}, $publishedArticles);
 		foreach (['volume', 'issue'] as $nodeName) {
 			$match = $xpath->query("//article/front/article-meta/$nodeName");
 			if ($match->length) {
-				$match->item(0)->setAttribute('seq', array_search($article->getId(), $articleIds)+1);
+				$match->item(0)->setAttribute('seq', ((int) $publication->getData('seq')) + 1);
 				break;
 			}
 		}
