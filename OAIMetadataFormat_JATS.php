@@ -16,7 +16,6 @@
 namespace APP\plugins\oaiMetadataFormats\oaiJats;
 
 use APP\facades\Repo;
-use PKP\submission\PKPSubmission;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
 use PKP\submissionFile\SubmissionFile;
@@ -407,16 +406,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Article sequence information
-		$articleIds = iterator_to_array(Repo::submission()->getCollector()
-                    ->filterByContextIds([$journal->getId()])
-                    ->filterByIssueIds([$issue->getId()])
-		    ->filterByStatus([PKPSubmission::STATUS_PUBLISHED])
-		    ->getIds()
-                );
 		foreach (['volume', 'issue'] as $nodeName) {
 			$match = $xpath->query("//article/front/article-meta/$nodeName");
 			if ($match->length) {
-				$match->item(0)->setAttribute('seq', array_search($article->getId(), $articleIds)+1);
+                $match->item(0)->setAttribute('seq', ((int) $publication->getData('seq')) + 1);
 				break;
 			}
 		}
