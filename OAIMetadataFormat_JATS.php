@@ -23,6 +23,7 @@ use APP\core\Application;
 use APP\issue\IssueAction;
 use PKP\plugins\PluginRegistry;
 use APP\core\Services;
+use PKP\core\PKPString;
 use PKP\plugins\Hook;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
@@ -324,13 +325,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Set the article abstract.
-		static $config = null, $sanitizer = null;
+		static $sanitizer = null;
 		if (!$sanitizer) {
-			$config = (new HtmlSanitizerConfig())
-				->allowLinkSchemes(['https', 'http', 'mailto'])
-				->allowMediaSchemes(['https', 'http'])
-				->allowElement('p');
-			$sanitizer = new HTMLSanitizer($config);
+			$sanitizer = new \PKP\core\PKPHtmlSanitizer('p');
 		}
 		foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) $articleMetaNode->removeChild($abstractNode);
 		foreach ((array) $publication->getData('abstract') as $locale => $abstract) {
