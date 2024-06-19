@@ -1,0 +1,33 @@
+# Weblate Admin <alec@smecher.bc.ca>, 2023.
+# José Carvalho <jcarvalho@keep.pt>, 2023.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-05-30 09:49+0000\n"
+"Last-Translator: José Carvalho <jcarvalho@keep.pt>\n"
+"Language-Team: Portuguese (Portugal) <http://translate.pkp.sfu.ca/projects/"
+"plugins/oai-jats-plugin/pt_PT/>\n"
+"Language: pt_PT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.13.1\n"
+
+msgid "plugins.oaiMetadata.jats.displayName"
+msgstr "Formato de Metadados JATS"
+
+msgid "plugins.oaiMetadata.jats.description"
+msgstr "Estrutura os metadados de forma consistente com o formato JATS XML."
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Este plugin fornece metadados para serviços externos no formato JATS XML "
+"através do interface OAI-PMH. Quando usado com o plug-in JATS Template, este "
+"pode funcionar mesmo se os documentos JATS XML não tiverem sido carregados "
+"no OJS."
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Definições"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Ignorar documentos JATS XML carregados"

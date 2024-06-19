@@ -1,0 +1,35 @@
+# Weblate Admin <alec@smecher.bc.ca>, 2023.
+# Germán Huélamo Bautista <germanhuelamo@gmail.com>, 2024.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-04-07 11:39+0000\n"
+"Last-Translator: Germán Huélamo Bautista <germanhuelamo@gmail.com>\n"
+"Language-Team: French <http://translate.pkp.sfu.ca/projects/plugins/"
+"oai-jats-plugin/fr_FR/>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.18.2\n"
+
+msgid "plugins.oaiMetadata.jats.displayName"
+msgstr "Format de métadonnées JATS"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Paramètres"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Ignorer les documents JATS XML téléchargés"
+
+msgid "plugins.oaiMetadata.jats.description"
+msgstr ""
+"Ce module structure les métadonnées de façon compatible avec le format JATS "
+"XML."
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Ce module fournit des métadonnées aux services externes au format XML JATS "
+"via l'interface OAI-PMH. Combiné avec le module JATS Template, il peut "
+"fonctionner même si les documents JATS XML n'ont pas été téléchargés dans "
+"OJS."
