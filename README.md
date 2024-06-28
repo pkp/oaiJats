@@ -4,8 +4,7 @@
 === Author: Alec Smecher <alec@smecher.bc.ca>
 ===============================================
 ```
-
-[![Build Status](https://travis-ci.org/pkp/oaiJats.svg?branch=stable-3_3_0)](https://travis-ci.org/pkp/oaiJats)
+[![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/stable-3_3_0.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/stable-3_3_0.yml)
 
 ## About
 
