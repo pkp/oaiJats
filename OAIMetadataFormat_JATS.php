@@ -22,7 +22,6 @@ use PKP\submissionFile\SubmissionFile;
 use APP\core\Application;
 use APP\issue\IssueAction;
 use PKP\plugins\PluginRegistry;
-use APP\core\Services;
 use PKP\core\PKPString;
 use PKP\plugins\Hook;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
@@ -75,7 +74,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Fetch the XML document
 		if (!$doc) {
 			$candidateFile = array_shift($candidateFiles);
-			$fileService = Services::get('file');
+			$fileService = app()->get('file');
 			$filepath = $fileService->get($candidateFile->getData('fileId'))->path;
 			$doc = new DOMDocument;
 			$doc->loadXML($fileService->fs->read($filepath));
@@ -476,7 +475,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 * @return boolean
 	 */
 	protected function _isCandidateFile($submissionFile) {
-		$fileService = Services::get('file');
+		$fileService = app()->get('file');
 		$filepath = $fileService->get($submissionFile->getData('fileId'))->path;
 		$mimeType = $fileService->fs->mimeType($filepath);
 
