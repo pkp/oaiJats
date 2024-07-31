@@ -5,7 +5,10 @@
 ===============================================
 ```
 
-[![Build Status](https://travis-ci.org/pkp/oaiJats.svg?branch=main)](https://travis-ci.org/pkp/oaiJats)
+| main | 3.4.0 | 3.3.0
+| ---- | ---- | ----
+| [![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/main.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/main.yml)                                  | [![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/stable-3_4_0.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/stable-3_4_0.yml)                                  | [![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/stable-3_3_0.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/stable-3_3_0.yml)                            |
+
 
 ## About
 
