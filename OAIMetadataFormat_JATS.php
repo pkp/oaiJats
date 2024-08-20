@@ -16,6 +16,10 @@
 namespace APP\plugins\oaiMetadataFormats\oaiJats;
 
 use APP\facades\Repo;
+use APP\core\Application;
+use APP\issue\IssueAction;
+use DOMDocument;
+use PKP\submission\SubmissionKeywordVocab;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
 use PKP\submissionFile\SubmissionFile;
