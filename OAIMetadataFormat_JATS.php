@@ -19,7 +19,7 @@ use APP\facades\Repo;
 use APP\core\Application;
 use APP\issue\IssueAction;
 use DOMDocument;
-use PKP\submission\SubmissionKeywordVocab;
+use PKP\controlledVocab\ControlledVocab;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
 use PKP\submissionFile\SubmissionFile;
@@ -313,7 +313,15 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		while (($kwdGroupNodes = $articleMetaNode->getElementsByTagName('kwd-group'))->length !== 0) {
 			$articleMetaNode->removeChild($kwdGroupNodes->item(0));
 		}
-		foreach (SubmissionKeywordVocab::getKeywords($publication->getId(), $journal->getSupportedLocales()) as $locale => $keywords) {
+
+		$keywordVocabs = Repo::controlledVocab()->getBySymbolic(
+			ControlledVocab::CONTROLLED_VOCAB_SUBMISSION_KEYWORD,
+			Application::ASSOC_TYPE_PUBLICATION,
+			$publication->getId(),
+			$journal->getSupportedLocales()
+		);
+
+		foreach ($keywordVocabs as $locale => $keywords) {
 			if (empty($keywords)) continue;
 
 			$kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
