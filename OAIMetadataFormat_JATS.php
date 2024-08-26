@@ -19,13 +19,10 @@ use APP\facades\Repo;
 use APP\core\Application;
 use APP\issue\IssueAction;
 use DOMDocument;
-use PKP\submission\SubmissionKeywordVocab;
+use PKP\controlledVocab\ControlledVocab;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
 use PKP\submissionFile\SubmissionFile;
-use APP\core\Application;
-use APP\issue\IssueAction;
-use DOMDocument;
 use DOMXPath;
 use PKP\plugins\PluginRegistry;
 use PKP\plugins\Hook;
@@ -314,12 +311,19 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Set the article keywords.
 		$keywordGroupNode = $xpath->query('//article/front/article-meta/kwd-group')->item(0);
-		/** @var SubmissionKeywordDAO $submissionKeywordDao */
-		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
+
 		while (($kwdGroupNodes = $articleMetaNode->getElementsByTagName('kwd-group'))->length !== 0) {
 			$articleMetaNode->removeChild($kwdGroupNodes->item(0));
 		}
-		foreach ($submissionKeywordDao->getKeywords($publication->getId()) as $locale => $keywords) {
+
+		$keywordVocabs = Repo::controlledVocab()->getBySymbolic(
+			ControlledVocab::CONTROLLED_VOCAB_SUBMISSION_KEYWORD,
+			Application::ASSOC_TYPE_PUBLICATION,
+			$publication->getId(),
+			$journal->getSupportedLocales()
+		);
+
+		foreach ($keywordVocabs as $locale => $keywords) {
 			if (empty($keywords)) continue;
 
 			$kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
