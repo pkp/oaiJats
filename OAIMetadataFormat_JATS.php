@@ -43,7 +43,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// First, look for candidates in the galleys area (published content).
 		if (!$forceJatsTemplate) {
 			foreach ($galleys as $galley) {
-				$galleyFile = Repo::submissionFile()->get($galley->getData('submissionFileId'));
+				$galleyFile = Repo::submissionFile()->get((int) $galley->getData('submissionFileId'));
 				if ($galleyFile && $this->_isCandidateFile($galleyFile)) $candidateFiles[] = $galleyFile;
 			}
 
