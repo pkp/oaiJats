@@ -53,7 +53,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 					->filterByFileStages([SubmissionFile::SUBMISSION_FILE_PRODUCTION_READY])
 					->filterBySubmissionIds([$article->getId()])
 					->getMany();
-				
+
 				foreach ($layoutFiles as $layoutFile) {
 					if ($this->_isCandidateFile($layoutFile)) $candidateFiles[] = $layoutFile;
 				}
@@ -259,12 +259,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		while ($titleGroupNode->hasChildNodes()) $titleGroupNode->removeChild($titleGroupNode->firstChild);
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
 		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
-		
+
 		$articleTitleHtml = $doc->createDocumentFragment();
 		$articleTitleHtml->appendXML(
 			$this->mapHtmlTagsForTitle(
 				$article->getCurrentPublication()->getLocalizedTitle(
-					$article->getLocale(), 
+					$article->getLocale(),
 					'html'
 				)
 			)
@@ -272,10 +272,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$titleNode->appendChild($articleTitleHtml);
 
 		if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($article->getLocale(), 'html'))) {
-			
+
 			$subtitleHtml = $doc->createDocumentFragment();
 			$subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
-			
+
 			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
 			$subtitleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
 
@@ -285,11 +285,11 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			if ($locale == $article->getLocale()) {
 				continue;
 			}
-			
+
 			if ( trim($title = $this->mapHtmlTagsForTitle($title)) === '' ) {
 				continue;
 			}
-			
+
 			$transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
 			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
 			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
@@ -365,10 +365,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Store the DOI
 		if ($doi = trim($article->getStoredPubId('doi'))) {
 			$match = $xpath->query("//article/front/article-meta/article-id[@pub-id-type='doi']");
-            if ($match->length) {
-                $originalDoiNode = $match->item(0)->firstChild;
-                $match->item(0)->replaceChild($doc->createTextNode($doi), $originalDoiNode);
-            } else {
+			if ($match->length) {
+				$originalDoiNode = $match->item(0)->firstChild;
+				$match->item(0)->replaceChild($doc->createTextNode($doi), $originalDoiNode);
+			} else {
 				$articleIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('article-id'));
 				$articleIdNode->setAttribute('pub-id-type', 'doi');
 				$articleIdNode->appendChild($doc->createTextNode($doi));
@@ -510,8 +510,8 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	/**
 	 * Map the specific HTML tags in title/ sub title for JATS schema compability
 	 * @see https://jats.nlm.nih.gov/publishing/0.4/xsd/JATS-journalpublishing0.xsd
-	 * 
-	 * @param  string $htmlTitle The submission title/sub title as in HTML 
+	 *
+	 * @param  string $htmlTitle The submission title/sub title as in HTML
 	 * @return string
 	 */
 	public function mapHtmlTagsForTitle(string $htmlTitle): string
