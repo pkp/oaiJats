@@ -365,8 +365,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		// Store the DOI
 		if ($doi = trim($article->getStoredPubId('doi'))) {
 			$match = $xpath->query("//article/front/article-meta/article-id[@pub-id-type='doi']");
-			if ($match->length) $match->item(0)->appendChild($doc->createTextNode($doi));
-			else {
+            if ($match->length) {
+                $originalDoiNode = $match->item(0)->firstChild;
+                $match->item(0)->replaceChild($doc->createTextNode($doi), $originalDoiNode);
+            } else {
 				$articleIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('article-id'));
 				$articleIdNode->setAttribute('pub-id-type', 'doi');
 				$articleIdNode->appendChild($doc->createTextNode($doi));
