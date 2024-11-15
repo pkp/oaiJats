@@ -22,7 +22,6 @@ use PKP\submissionFile\SubmissionFile;
 use APP\core\Application;
 use APP\issue\IssueAction;
 use PKP\plugins\PluginRegistry;
-use PKP\core\PKPString;
 use PKP\plugins\Hook;
 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat {
@@ -93,7 +92,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Check access
 		$request = Application::get()->getRequest();
-		import('classes.issue.IssueAction');
 		$issueAction = new IssueAction();
 		$subscriptionRequired = $issueAction->subscriptionRequired($issue, $journal);
 		$isSubscribedDomain = $issueAction->subscribedDomain(Application::get()->getRequest(), $journal, $issue->getId(), $article->getId());
@@ -165,13 +163,13 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$publication = $article->getCurrentPublication();
 
 		$articleNode = $xpath->query('//article')->item(0);
-		$articleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
+		$articleNode->setAttribute('xml:lang', substr($article->getData('locale'),0,2));
 		$articleNode->setAttribute('dtd-version', '1.1');
 		$articleNode->setAttribute('specific-use', 'eps-0.1');
 		$articleNode->setAttribute('xmlns', 'https://jats.nlm.nih.gov/publishing/1.1/');
 
 		// Set the article publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
-		if ($datePublished = $article->getDatePublished()) {
+		if ($datePublished = $publication->getData('datePublished')) {
 			$datePublished = strtotime($datePublished);
 			$match = $xpath->query("//article/front/article-meta/pub-date[@date-type='pub' and @publication-format='epub']");
 			if ($match->length) {
@@ -215,12 +213,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Set the article URLs: Landing page
 		$uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
-		$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', $article->getBestArticleId()));
+		$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', [$article->getBestId()]));
 
 		// Set the article URLs: Galleys
 		foreach ($article->getGalleys() as $galley) {
 			$uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
-			$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', [$article->getBestArticleId(), $galley->getId()]));
+			$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', [$article->getBestId(), $galley->getId()]));
 			if (!$galley->getData('urlRemote')) $uriNode->setAttribute('content-type', $galley->getFileType());
 		}
 
@@ -258,31 +256,31 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$titleGroupNode = $xpath->query('//article/front/article-meta/title-group')->item(0);
 		while ($titleGroupNode->hasChildNodes()) $titleGroupNode->removeChild($titleGroupNode->firstChild);
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
-		$titleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
+		$titleNode->setAttribute('xml:lang', substr($article->getData('locale'),0,2));
 
 		$articleTitleHtml = $doc->createDocumentFragment();
 		$articleTitleHtml->appendXML(
 			$this->mapHtmlTagsForTitle(
 				$article->getCurrentPublication()->getLocalizedTitle(
-					$article->getLocale(),
+					$article->getData('locale'),
 					'html'
 				)
 			)
 		);
 		$titleNode->appendChild($articleTitleHtml);
 
-		if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($article->getLocale(), 'html'))) {
+		if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($article->getData('locale'), 'html'))) {
 
 			$subtitleHtml = $doc->createDocumentFragment();
 			$subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
 
 			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
-			$subtitleNode->setAttribute('xml:lang', substr($article->getLocale(),0,2));
+			$subtitleNode->setAttribute('xml:lang', substr($article->getData('locale'),0,2));
 
 			$subtitleNode->appendChild($subtitleHtml);
 		}
 		foreach ($article->getCurrentPublication()->getTitles('html') as $locale => $title) {
-			if ($locale == $article->getLocale()) {
+			if ($locale == $article->getData('locale')) {
 				continue;
 			}
 
@@ -333,7 +331,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) $articleMetaNode->removeChild($abstractNode);
 		foreach ((array) $publication->getData('abstract') as $locale => $abstract) {
 			if (empty($abstract)) continue;
-			$isPrimary = $locale == $article->getLocale();
+			$isPrimary = $locale == $article->getData('locale');
 			$abstractDoc = new \DOMDocument;
 			if (strpos($abstract, '<p>')===null) $abstract = "<p>$abstract</p>";
 			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $purifier->purify($abstract) . ($isPrimary?'</abstract>':'</trans-abstract>'));
@@ -378,9 +376,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Override permissions, when not supplied in the document
 		$match = $xpath->query('//article/front/article-meta/permissions');
-		$copyrightHolder = $article->getLocalizedCopyrightHolder($article->getLocale());
-		$copyrightYear = $article->getCopyrightYear();
-		$licenseUrl = $article->getLicenseURL();
+		$copyrightHolder = $publication->getLocalizedData('copyrightHolder', $article->getData('locale'));
+		$copyrightYear = $publication->getData('copyrightYear');
+		$licenseUrl = $publication->getData('licenseUrl');
 		if (!$match->length && ($copyrightHolder || $copyrightYear || $licenseUrl)) {
 			$permissionsNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('permissions'));
 			if ($copyrightYear || $copyrightHolder) $permissionsNode->appendChild($doc->createElement('copyright-statement'))->appendChild($doc->createTextNode(__('submission.copyrightStatement', ['copyrightYear' => $copyrightYear, 'copyrightHolder' => $copyrightHolder])));
