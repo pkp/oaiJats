@@ -163,7 +163,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$publication = $article->getCurrentPublication();
 
 		$articleNode = $xpath->query('//article')->item(0);
-		$articleNode->setAttribute('xml:lang', substr($article->getData('locale'),0,2));
+		$articleNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $article->getData('locale')));
 		$articleNode->setAttribute('dtd-version', '1.1');
 		$articleNode->setAttribute('specific-use', 'eps-0.1');
 		$articleNode->setAttribute('xmlns', 'https://jats.nlm.nih.gov/publishing/1.1/');
@@ -247,7 +247,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$titleNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-title'));
 				$titleText = $doc->createTextNode($title);
 				$titleNode->appendChild($titleText);
-				$titleNode->setAttribute('xml:lang', substr($locale,0,2));
+				$titleNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
 			}
 		}
 
@@ -256,7 +256,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$titleGroupNode = $xpath->query('//article/front/article-meta/title-group')->item(0);
 		while ($titleGroupNode->hasChildNodes()) $titleGroupNode->removeChild($titleGroupNode->firstChild);
 		$titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
-		$titleNode->setAttribute('xml:lang', substr($article->getData('locale'),0,2));
+		$titleNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $article->getData('locale')));
 
 		$articleTitleHtml = $doc->createDocumentFragment();
 		$articleTitleHtml->appendXML(
@@ -275,7 +275,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
 
 			$subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
-			$subtitleNode->setAttribute('xml:lang', substr($article->getData('locale'),0,2));
+			$subtitleNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $article->getData('locale')));
 
 			$subtitleNode->appendChild($subtitleHtml);
 		}
@@ -289,7 +289,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			}
 
 			$transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
-			$transTitleGroupNode->setAttribute('xml:lang', substr($locale,0,2));
+			$transTitleGroupNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
 			$titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
 
 			$titleHtml = $doc->createDocumentFragment();
@@ -314,7 +314,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			if (empty($keywords)) continue;
 
 			$kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
-			$kwdGroupNode->setAttribute('xml:lang', substr($locale,0,2));
+			$kwdGroupNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
 			$kwdGroupNode->appendChild($doc->createElement('title'))->appendChild($doc->createTextNode(__('article.subject', [], $locale)));
 			foreach ($keywords as $keyword) $kwdGroupNode->appendChild($doc->createElement('kwd'))->appendChild($doc->createTextNode($keyword));
 		}
@@ -336,7 +336,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			if (strpos($abstract, '<p>')===null) $abstract = "<p>$abstract</p>";
 			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $purifier->purify($abstract) . ($isPrimary?'</abstract>':'</trans-abstract>'));
 			$abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($abstractDoc->documentElement, true));
-			if (!$isPrimary) $abstractNode->setAttribute('xml:lang', substr($locale,0,2));
+			if (!$isPrimary) $abstractNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
 		}
 
 		// Set the journal-id[publisher-id']
@@ -401,7 +401,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			if (empty($title)) continue;
 			$subjGroupNode = $articleCategoriesNode->appendChild($doc->createElement('subj-group'));
 			$subjGroupNode->setAttribute('subj-group-type', 'heading');
-			$subjGroupNode->setAttribute('xml:lang', substr($locale,0,2));
+			$subjGroupNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
 			$subjectNode = $subjGroupNode->appendChild($doc->createElement('subject'));
 			$subjectNode->appendChild($doc->createTextNode($title));
 		}
