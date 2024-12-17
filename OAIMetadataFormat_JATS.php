@@ -16,11 +16,13 @@
 namespace APP\plugins\oaiMetadataFormats\oaiJats;
 
 use APP\facades\Repo;
+use APP\core\Application;
+use APP\issue\IssueAction;
+use DOMDocument;
+use PKP\controlledVocab\ControlledVocab;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
 use PKP\submissionFile\SubmissionFile;
-use APP\core\Application;
-use APP\issue\IssueAction;
 use PKP\plugins\PluginRegistry;
 use PKP\plugins\Hook;
 use PKP\userGroup\UserGroup;
@@ -85,7 +87,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 * @copydoc OAIMetadataFormat#toXml
 	 */
 	function toXml($record, $format = null) {
-		$oaiDao = DAORegistry::getDAO('OAIDAO');
+		$oaiDao = DAORegistry::getDAO('OAIDAO'); /** @var \APP\oai\ojs\OAIDAO $oaiDao */
 		$journal = $record->getData('journal');
 		$article = $record->getData('article');
 		$section = $record->getData('section');
@@ -307,11 +309,19 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Set the article keywords.
 		$keywordGroupNode = $xpath->query('//article/front/article-meta/kwd-group')->item(0);
-		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
+
 		while (($kwdGroupNodes = $articleMetaNode->getElementsByTagName('kwd-group'))->length !== 0) {
 			$articleMetaNode->removeChild($kwdGroupNodes->item(0));
 		}
-		foreach ($submissionKeywordDao->getKeywords($publication->getId(), $journal->getSupportedLocales()) as $locale => $keywords) {
+
+		$keywordVocabs = Repo::controlledVocab()->getBySymbolic(
+			ControlledVocab::CONTROLLED_VOCAB_SUBMISSION_KEYWORD,
+			Application::ASSOC_TYPE_PUBLICATION,
+			$publication->getId(),
+			$journal->getSupportedLocales()
+		);
+
+		foreach ($keywordVocabs as $locale => $keywords) {
 			if (empty($keywords)) continue;
 
 			$kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
