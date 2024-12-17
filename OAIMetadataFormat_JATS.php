@@ -262,7 +262,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$articleTitleHtml = $doc->createDocumentFragment();
 		$articleTitleHtml->appendXML(
 			$this->mapHtmlTagsForTitle(
-				$article->getCurrentPublication()->getLocalizedTitle(
+				$publication->getLocalizedTitle(
 					$article->getData('locale'),
 					'html'
 				)
@@ -270,7 +270,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		);
 		$titleNode->appendChild($articleTitleHtml);
 
-		if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($article->getData('locale'), 'html'))) {
+		if (!empty($subtitle = $publication->getLocalizedSubTitle($article->getData('locale'), 'html'))) {
 
 			$subtitleHtml = $doc->createDocumentFragment();
 			$subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
@@ -280,7 +280,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 			$subtitleNode->appendChild($subtitleHtml);
 		}
-		foreach ($article->getCurrentPublication()->getTitles('html') as $locale => $title) {
+		foreach ($publication->getTitles('html') as $locale => $title) {
 			if ($locale == $article->getData('locale')) {
 				continue;
 			}
@@ -297,7 +297,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$titleHtml->appendXML($title);
 			$titleNode->appendChild($titleHtml);
 
-			if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($locale, 'html'))) {
+			if (!empty($subtitle = $publication->getLocalizedSubTitle($locale, 'html'))) {
 				$subtitleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-subtitle'));
 				$subtitleHtml = $doc->createDocumentFragment();
 				$subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
@@ -307,11 +307,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Set the article keywords.
 		$keywordGroupNode = $xpath->query('//article/front/article-meta/kwd-group')->item(0);
+		/** @var SubmissionKeywordDAO $submissionKeywordDao */
 		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
 		while (($kwdGroupNodes = $articleMetaNode->getElementsByTagName('kwd-group'))->length !== 0) {
 			$articleMetaNode->removeChild($kwdGroupNodes->item(0));
 		}
-		foreach ($submissionKeywordDao->getKeywords($publication->getId(), $journal->getSupportedLocales()) as $locale => $keywords) {
+		foreach ($submissionKeywordDao->getKeywords($publication->getId()) as $locale => $keywords) {
 			if (empty($keywords)) continue;
 
 			$kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
