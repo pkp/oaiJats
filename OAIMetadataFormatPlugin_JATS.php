@@ -15,12 +15,12 @@
 
 namespace APP\plugins\oaiMetadataFormats\oaiJats;
 
+use APP\core\Application;
+use APP\notification\NotificationManager;
 use PKP\plugins\OAIMetadataFormatPlugin;
-use PKP\core\PKPApplication;
 use PKP\core\JSONMessage;
 use PKP\linkAction\request\AjaxModal;
 use PKP\linkAction\LinkAction;
-use APP\notification\NotificationManager;
 
 class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	/**
@@ -67,7 +67,7 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	 * @return boolean
 	 */
 	function getEnabled() {
-		$request = PKPApplication::get()->getRequest();
+		$request = Application::get()->getRequest();
 		if (!$request) return false;
 		$context = $request->getContext();
 		if (!$context) return false;
@@ -79,7 +79,7 @@ class OAIMetadataFormatPlugin_JATS extends OAIMetadataFormatPlugin {
 	 * @param $enabled boolean
 	 */
 	function setEnabled($enabled) {
-		$request = PKPApplication::get()->getRequest();
+		$request = Application::get()->getRequest();
 		$context = $request->getContext();
 		$this->updateSetting($context->getId(), 'enabled', $enabled, 'bool');
 	}
