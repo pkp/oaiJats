@@ -21,6 +21,8 @@ use PKP\db\DAORegistry;
 use PKP\submissionFile\SubmissionFile;
 use APP\core\Application;
 use APP\issue\IssueAction;
+use DOMDocument;
+use DOMXPath;
 use PKP\plugins\PluginRegistry;
 use PKP\plugins\Hook;
 use PKP\userGroup\UserGroup;
@@ -74,7 +76,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$candidateFile = array_shift($candidateFiles);
 			$fileService = app()->get('file');
 			$filepath = $fileService->get($candidateFile->getData('fileId'))->path;
-			$doc = new DOMDocument;
+			$doc = new DOMDocument();
 			$doc->loadXML($fileService->fs->read($filepath));
 		}
 
@@ -85,6 +87,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 * @copydoc OAIMetadataFormat#toXml
 	 */
 	function toXml($record, $format = null) {
+		/** @var OAIDAO $oaiDao */
 		$oaiDao = DAORegistry::getDAO('OAIDAO');
 		$journal = $record->getData('journal');
 		$article = $record->getData('article');
@@ -147,12 +150,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 	 * Override elements of the JATS XML with aspects of the OJS article's metadata.
 	 * @param $doc DOMDocument
 	 * @param $journal Journal
-	 * @param $article Article
+	 * @param $article Submission
 	 * @param $section Section
 	 * @param $issue Issue
 	 */
 	protected function _mungeMetadata($doc, $journal, $article, $section, $issue) {
-		$xpath = new \DOMXPath($doc);
+		$xpath = new DOMXPath($doc);
 		$articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
 		$journalMetaNode = $xpath->query('//article/front/journal-meta')->item(0);
 		if (!$journalMetaNode) {
@@ -184,16 +187,16 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 				$dateNode->setAttribute('publication-format', 'epub');
 			}
 
-			$dateNode->appendChild($doc->createElement('day'))->appendChild($doc->createTextNode(strftime('%d', $datePublished)));
-			$dateNode->appendChild($doc->createElement('month'))->appendChild($doc->createTextNode(strftime('%m', $datePublished)));
-			$dateNode->appendChild($doc->createElement('year'))->appendChild($doc->createTextNode(strftime('%Y', $datePublished)));
+			$dateNode->appendChild($doc->createElement('day'))->appendChild($doc->createTextNode(date('%d', $datePublished)));
+			$dateNode->appendChild($doc->createElement('month'))->appendChild($doc->createTextNode(date('%m', $datePublished)));
+			$dateNode->appendChild($doc->createElement('year'))->appendChild($doc->createTextNode(date('%Y', $datePublished)));
 		}
 
 		// Set the issue publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
 		$issueYear = null;
 		if ($issue && $issue->getShowYear()) $issueYear = $issue->getYear();
-		if (!$issueYear && $issue && $issue->getDatePublished()) $issueYear = strftime('%Y', strtotime($issue->getDatePublished()));
-		if (!$issueYear && $datePublished) $issueYear = strftime('%Y', $datePublished);
+		if (!$issueYear && $issue && $issue->getDatePublished()) $issueYear = date('%Y', strtotime($issue->getDatePublished()));
+		if (!$issueYear && $datePublished) $issueYear = date('%Y', $datePublished);
 		if ($issueYear) {
 			$match = $xpath->query("//article/front/article-meta/pub-date[@date-type='collection']");
 			if ($match->length) {
@@ -217,7 +220,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', [$article->getBestId()]));
 
 		// Set the article URLs: Galleys
-		foreach ($article->getGalleys() as $galley) {
+		foreach ($publication->getData('galleys') as $galley) {
 			$uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
 			$uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', [$article->getBestId(), $galley->getId()]));
 			if (!$galley->getData('urlRemote')) $uriNode->setAttribute('content-type', $galley->getFileType());
@@ -262,7 +265,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		$articleTitleHtml = $doc->createDocumentFragment();
 		$articleTitleHtml->appendXML(
 			$this->mapHtmlTagsForTitle(
-				$article->getCurrentPublication()->getLocalizedTitle(
+				$publication->getLocalizedTitle(
 					$article->getData('locale'),
 					'html'
 				)
@@ -270,7 +273,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		);
 		$titleNode->appendChild($articleTitleHtml);
 
-		if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($article->getData('locale'), 'html'))) {
+		if (!empty($subtitle = $publication->getLocalizedSubTitle($article->getData('locale'), 'html'))) {
 
 			$subtitleHtml = $doc->createDocumentFragment();
 			$subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
@@ -280,7 +283,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 			$subtitleNode->appendChild($subtitleHtml);
 		}
-		foreach ($article->getCurrentPublication()->getTitles('html') as $locale => $title) {
+		foreach ($publication->getTitles('html') as $locale => $title) {
 			if ($locale == $article->getData('locale')) {
 				continue;
 			}
@@ -297,7 +300,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 			$titleHtml->appendXML($title);
 			$titleNode->appendChild($titleHtml);
 
-			if (!empty($subtitle = $article->getCurrentPublication()->getLocalizedSubTitle($locale, 'html'))) {
+			if (!empty($subtitle = $publication->getLocalizedSubTitle($locale, 'html'))) {
 				$subtitleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-subtitle'));
 				$subtitleHtml = $doc->createDocumentFragment();
 				$subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
@@ -307,11 +310,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 
 		// Set the article keywords.
 		$keywordGroupNode = $xpath->query('//article/front/article-meta/kwd-group')->item(0);
+		/** @var SubmissionKeywordDAO $submissionKeywordDao */
 		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
 		while (($kwdGroupNodes = $articleMetaNode->getElementsByTagName('kwd-group'))->length !== 0) {
 			$articleMetaNode->removeChild($kwdGroupNodes->item(0));
 		}
-		foreach ($submissionKeywordDao->getKeywords($publication->getId(), $journal->getSupportedLocales()) as $locale => $keywords) {
+		foreach ($submissionKeywordDao->getKeywords($publication->getId()) as $locale => $keywords) {
 			if (empty($keywords)) continue;
 
 			$kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
@@ -333,7 +337,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		foreach ((array) $publication->getData('abstract') as $locale => $abstract) {
 			if (empty($abstract)) continue;
 			$isPrimary = $locale == $article->getData('locale');
-			$abstractDoc = new \DOMDocument;
+			$abstractDoc = new DOMDocument();
 			if (strpos($abstract, '<p>')===null) $abstract = "<p>$abstract</p>";
 			$abstractDoc->loadXML(($isPrimary?'<abstract>':'<trans-abstract>') . $purifier->purify($abstract) . ($isPrimary?'</abstract>':'</trans-abstract>'));
 			$abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($abstractDoc->documentElement, true));
@@ -363,7 +367,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat {
 		}
 
 		// Store the DOI
-		if ($doi = trim($article->getStoredPubId('doi'))) {
+		if ($doi = trim($publication->getStoredPubId('doi'))) {
 			$match = $xpath->query("//article/front/article-meta/article-id[@pub-id-type='doi']");
 			if ($match->length) {
 				$originalDoiNode = $match->item(0)->firstChild;
