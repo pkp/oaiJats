@@ -25,6 +25,8 @@ use APP\submission\Submission;
 use DOMDocument;
 use DOMNode;
 use DOMXPath;
+use HTMLPurifier;
+use HTMLPurifier_Config;
 use Issue;
 use PKP\controlledVocab\ControlledVocab;
 use PKP\core\DataObject;
@@ -40,7 +42,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
 {
     /**
      * Identify a candidate JATS file to expose via OAI.
+     *
      * @param $record DataObject
+     *
      * @return DOMDocument|null
      */
     protected function findJats($record)
@@ -136,8 +140,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
 
     /**
      * Add the child node to the parent node in the appropriate node order.
+     *
      * @param $parentNode DOMNode The parent element.
      * @param $childNode DOMNode The child node.
+     *
      * @return DOMNode The child node.
      */
     protected function _addChildInOrder($parentNode, $childNode)
@@ -168,6 +174,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
 
     /**
      * Override elements of the JATS XML with aspects of the OJS article's metadata.
+     *
      * @param $doc DOMDocument
      * @param $journal Journal
      * @param $article Submission
@@ -193,7 +200,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         $articleNode->setAttribute('specific-use', 'eps-0.1');
         $articleNode->setAttribute('xmlns', 'https://jats.nlm.nih.gov/publishing/1.1/');
 
-        // Set the article publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
+        // Set the article publication date. https://eruditps.docs.erudit.org/tagset/element-pub-date.html
         if ($datePublished = $publication->getData('datePublished')) {
             $datePublished = strtotime($datePublished);
             $match = $xpath->query("//article/front/article-meta/pub-date[@date-type='pub' and @publication-format='epub']");
@@ -215,7 +222,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             $dateNode->appendChild($doc->createElement('year'))->appendChild($doc->createTextNode(date('%Y', $datePublished)));
         }
 
-        // Set the issue publication date. http://erudit-ps-documentation.readthedocs.io/en/latest/tagset/element-pub-date.html
+        // Set the issue publication date. https://eruditps.docs.erudit.org/tagset/element-pub-date.html
         $issueYear = null;
         if ($issue && $issue->getShowYear()) {
             $issueYear = $issue->getYear();
@@ -300,7 +307,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             }
         }
 
-
         // Set the article title.
         $titleGroupNode = $xpath->query('//article/front/article-meta/title-group')->item(0);
         while ($titleGroupNode->hasChildNodes()) {
@@ -384,10 +390,10 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         // Set the article abstract.
         static $purifier;
         if (!$purifier) {
-            $config = \HTMLPurifier_Config::createDefault();
+            $config = HTMLPurifier_Config::createDefault();
             $config->set('HTML.Allowed', 'p');
             $config->set('Cache.SerializerPath', 'cache');
-            $purifier = new \HTMLPurifier($config);
+            $purifier = new HTMLPurifier($config);
         }
 
         foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) {
@@ -409,7 +415,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             }
         }
 
-        // Set the journal-id[publisher-id']
+        // Set the journal-id[publisher-id]
         $match = $xpath->query("//article/front/journal-meta/journal-id[@journal-id-type='publisher']");
         if ($match->length) {
             $match->item(0)->appendChild($doc->createTextNode($journal->getPath()));
@@ -533,6 +539,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             'default.groups.name.editor' => 'editor',
             'default.groups.name.sectionEditor' => 'secteditor',
         ];
+
+        $sitePrimaryLocale = $request->getSite()->getPrimaryLocale();
+
         foreach ($userGroups as $userGroup) {
             if (!isset($keyContribTypeMapping[$userGroup->nameLocaleKey])) {
                 continue;
@@ -543,23 +552,23 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
                 $contribNode = $contribGroupNode->appendChild($doc->createElement('contrib'));
                 $contribNode->setAttribute('contrib-type', $keyContribTypeMapping[$userGroup->nameLocaleKey]);
                 $nameNode = $contribNode->appendChild($doc->createElement('name'));
-                $surname = method_exists($user, 'getLastName') ? $user->getLastName() : $user->getLocalizedFamilyName();
-                if ($surname != '') {
+
+                if ($user->getFamilyName($sitePrimaryLocale)) {
                     $surnameNode = $nameNode->appendChild($doc->createElement('surname'));
-                    $surnameNode->appendChild($doc->createTextNode($surname));
+                    $surnameNode->appendChild($doc->createTextNode($user->getFamilyName($sitePrimaryLocale)));
                 }
+
                 $givenNamesNode = $nameNode->appendChild($doc->createElement('given-names'));
-                $givenNamesNode->appendChild($doc->createTextNode(method_exists($user, 'getFirstName') ? $user->getFirstName() : $user->getLocalizedGivenName()));
-                if (method_exists($user, 'getMiddleName') && $s = $user->getMiddleName()) {
-                    $givenNamesNode->appendChild($doc->createTextNode(" $s"));
-                }
+                $givenNamesNode->appendChild($doc->createTextNode($user->getGivenName($sitePrimaryLocale)));
             }
         }
     }
 
     /**
      * Determine whether a submission file is a good candidate for JATS XML.
+     *
      * @param $submissionFile SubmissionFile
+     *
      * @return boolean
      */
     protected function isCandidateFile($submissionFile)
@@ -594,9 +603,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         }
 
         // Ensure that the file looks like a JATS document.
-        $doc = new \DOMDocument();
+        $doc = new DOMDocument();
         $doc->loadXML($fileService->fs->read($filepath));
-        $xpath = new \DOMXPath($doc);
+        $xpath = new DOMXPath($doc);
         $articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
         if (!$articleMetaNode) {
             return false;
@@ -606,10 +615,12 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
     }
 
     /**
-     * Map the specific HTML tags in title/ sub title for JATS schema compability
+     * Map the specific HTML tags in title/subtitle for JATS schema compatibility
+     *
      * @see https://jats.nlm.nih.gov/publishing/0.4/xsd/JATS-journalpublishing0.xsd
      *
-     * @param  string $htmlTitle The submission title/sub title as in HTML
+     * @param string $htmlTitle The submission title/subtitle as in HTML
+     *
      * @return string
      */
     public function mapHtmlTagsForTitle(string $htmlTitle): string
