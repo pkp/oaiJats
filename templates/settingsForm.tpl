@@ -5,7 +5,7 @@
  * Copyright (c) 2003-2022 John Willinsky
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
- * Web feeds plugin settings
+ * JATS Metadata Format plugin settings
  *
  *}
 <script>
@@ -17,11 +17,8 @@
 
 <form class="pkp_form" id="oaiJatsSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="oaiMetadataFormats" plugin=$pluginName verb="settings" save=true}">
 	<div id="oaiJatsSettings">
-
 		<div id="description">{translate key="plugins.oaiMetadataFormats.oaiJats.description"}</div>
-
 		<h3>{translate key="plugins.oaiMetadataFormats.oaiJats.settings"}</h3>
-
 
 		{csrf}
 		{include file="controllers/notification/inPlaceNotification.tpl" notificationId="oaiJatsSettingsFormNotification"}

@@ -5,18 +5,16 @@
 ===============================================
 ```
 
-| main | 3.4.0 | 3.3.0
-| ---- | ---- | ----
-| [![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/main.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/main.yml)                                  | [![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/stable-3_4_0.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/stable-3_4_0.yml)                                  | [![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/stable-3_3_0.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/stable-3_3_0.yml)                            |
+| main                                                                                                                                         | 3.4.0                                                                                                                                                        | 3.3.0                                                                                                                                                        |
+|----------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/main.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/main.yml) | [![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/stable-3_4_0.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/stable-3_4_0.yml) | [![oaiJats](https://github.com/pkp/oaiJats/actions/workflows/stable-3_3_0.yml/badge.svg)](https://github.com/pkp/oaiJats/actions/workflows/stable-3_3_0.yml) |
 
 
 ## About
 
 This plugin exposes JATS XML via the OAI-PMH interface.
 Note that it DOES NOT generate JATS XML itself -- it assumes that this will
-already be available. You can use a tool like Open Typesetting Stack
-(https://pkp.sfu.ca/open-typesetting-stack/) to generate the JATS XML.
-The JATS Template plugin (https://github.com/asmecher/jatsTemplate) can also
+already be available. The JATS Template plugin (https://github.com/asmecher/jatsTemplate) can
 be used to generate simple JATS documents as a fallback.
 
 Once this plugin is enabled, it will look for JATS XML both in the Galleys
@@ -27,7 +25,6 @@ certain areas, such as DOIs, permissions, titles, and abstracts, to help keep
 served data consistent with metadata in OJS. However, it is recommended that
 editorial practices ensure that the two data sets remain consistent rather than
 relying on the transformation built into this plugin.
-
 
 ## License
 
