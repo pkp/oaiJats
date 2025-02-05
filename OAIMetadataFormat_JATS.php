@@ -32,6 +32,7 @@ use PKP\controlledVocab\ControlledVocab;
 use PKP\core\DataObject;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
+use PKP\i18n\LocaleConversion;
 use PKP\submission\Genre;
 use PKP\submissionFile\SubmissionFile;
 use PKP\plugins\PluginRegistry;
@@ -195,7 +196,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         $publication = $article->getCurrentPublication();
 
         $articleNode = $xpath->query('//article')->item(0);
-        $articleNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $article->getData('locale')));
+        $articleNode->setAttribute('xml:lang', LocaleConversion::toBcp47($article->getData('locale')));
         $articleNode->setAttribute('dtd-version', '1.1');
         $articleNode->setAttribute('specific-use', 'eps-0.1');
         $articleNode->setAttribute('xmlns', 'https://jats.nlm.nih.gov/publishing/1.1/');
@@ -303,7 +304,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
                 $titleNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-title'));
                 $titleText = $doc->createTextNode($title);
                 $titleNode->appendChild($titleText);
-                $titleNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
+                $titleNode->setAttribute('xml:lang', LocaleConversion::toBcp47($locale));
             }
         }
 
@@ -313,7 +314,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             $titleGroupNode->removeChild($titleGroupNode->firstChild);
         }
         $titleNode = $titleGroupNode->appendChild($doc->createElement('article-title'));
-        $titleNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $article->getData('locale')));
+        $titleNode->setAttribute('xml:lang', LocaleConversion::toBcp47($article->getData('locale')));
 
         $articleTitleHtml = $doc->createDocumentFragment();
         $articleTitleHtml->appendXML(
@@ -331,7 +332,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             $subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
 
             $subtitleNode = $titleGroupNode->appendChild($doc->createElement('subtitle'));
-            $subtitleNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $article->getData('locale')));
+            $subtitleNode->setAttribute('xml:lang', LocaleConversion::toBcp47($article->getData('locale')));
 
             $subtitleNode->appendChild($subtitleHtml);
         }
@@ -345,7 +346,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             }
 
             $transTitleGroupNode = $titleGroupNode->appendChild($doc->createElement('trans-title-group'));
-            $transTitleGroupNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
+            $transTitleGroupNode->setAttribute('xml:lang', LocaleConversion::toBcp47($locale));
             $titleNode = $transTitleGroupNode->appendChild($doc->createElement('trans-title'));
 
             $titleHtml = $doc->createDocumentFragment();
@@ -380,7 +381,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             }
 
             $kwdGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('kwd-group'));
-            $kwdGroupNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
+            $kwdGroupNode->setAttribute('xml:lang', LocaleConversion::toBcp47($locale));
             $kwdGroupNode->appendChild($doc->createElement('title'))->appendChild($doc->createTextNode(__('article.subject', [], $locale)));
             foreach ($keywords as $keyword) {
                 $kwdGroupNode->appendChild($doc->createElement('kwd'))->appendChild($doc->createTextNode($keyword));
@@ -411,7 +412,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             $abstractDoc->loadXML(($isPrimary ? '<abstract>' : '<trans-abstract>') . $purifier->purify($abstract) . ($isPrimary ? '</abstract>' : '</trans-abstract>'));
             $abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($abstractDoc->documentElement, true));
             if (!$isPrimary) {
-                $abstractNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
+                $abstractNode->setAttribute('xml:lang', LocaleConversion::toBcp47($locale));
             }
         }
 
@@ -489,7 +490,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             }
             $subjGroupNode = $articleCategoriesNode->appendChild($doc->createElement('subj-group'));
             $subjGroupNode->setAttribute('subj-group-type', 'heading');
-            $subjGroupNode->setAttribute('xml:lang', str_replace(['_', '@'], '-', $locale));
+            $subjGroupNode->setAttribute('xml:lang', LocaleConversion::toBcp47($locale));
             $subjectNode = $subjGroupNode->appendChild($doc->createElement('subject'));
             $subjectNode->appendChild($doc->createTextNode($title));
         }
