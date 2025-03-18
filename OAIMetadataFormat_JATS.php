@@ -134,7 +134,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             $oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (JATS XML not available)');
             exit();
         }
-        $this->_mungeMetadata($doc, $journal, $article, $section, $issue);
+        $this->_mungeMetadata($doc, $journal, $article, $section, $issue, $allowedPrePublicationAccess);
 
         return $doc->saveXml($doc->getElementsByTagName('article')->item(0));
     }
@@ -181,8 +181,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
      * @param $article Submission
      * @param $section Section
      * @param $issue Issue
+     * @param $allowedPrePublicationAccess bool
      */
-    protected function _mungeMetadata($doc, $journal, $article, $section, $issue)
+    protected function _mungeMetadata($doc, $journal, $article, $section, $issue, $allowedPrePublicationAccess = false)
     {
         $xpath = new DOMXPath($doc);
         $articleMetaNode = $xpath->query('//article/front/article-meta')->item(0);
@@ -358,6 +359,14 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
                 $subtitleHtml = $doc->createDocumentFragment();
                 $subtitleHtml->appendXML($this->mapHtmlTagsForTitle($subtitle));
                 $subtitleNode->appendChild($subtitleHtml);
+            }
+        }
+
+        // Remove author emails from public OAI export
+        if (!$allowedPrePublicationAccess) {
+            $authorEmailNodes = $xpath->query('//article/front/article-meta/contrib-group/contrib/email');
+            foreach ($authorEmailNodes as $node) {
+                $node->parentNode->removeChild($node);
             }
         }
 
