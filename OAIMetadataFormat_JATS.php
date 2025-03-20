@@ -219,9 +219,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
                 $dateNode->setAttribute('publication-format', 'epub');
             }
 
-            $dateNode->appendChild($doc->createElement('day'))->appendChild($doc->createTextNode(date('%d', $datePublished)));
-            $dateNode->appendChild($doc->createElement('month'))->appendChild($doc->createTextNode(date('%m', $datePublished)));
-            $dateNode->appendChild($doc->createElement('year'))->appendChild($doc->createTextNode(date('%Y', $datePublished)));
+            $dateNode->appendChild($doc->createElement('day'))->appendChild($doc->createTextNode(date('d', $datePublished)));
+            $dateNode->appendChild($doc->createElement('month'))->appendChild($doc->createTextNode(date('m', $datePublished)));
+            $dateNode->appendChild($doc->createElement('year'))->appendChild($doc->createTextNode(date('Y', $datePublished)));
         }
 
         // Set the issue publication date. https://eruditps.docs.erudit.org/tagset/element-pub-date.html
