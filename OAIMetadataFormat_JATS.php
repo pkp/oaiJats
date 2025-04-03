@@ -264,7 +264,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         // Set the article URLs: Galleys
         foreach ($publication->getData('galleys') as $galley) {
             $uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
-            $uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', [$article->getBestId(), $galley->getId()]));
+            $uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'download', [$article->getBestId(), $galley->getId(), $galley->getData('submissionFileId')]));
             if (!$galley->getData('urlRemote')) {
                 $uriNode->setAttribute('content-type', $galley->getFileType());
             }
