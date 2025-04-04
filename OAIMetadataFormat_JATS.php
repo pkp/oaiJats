@@ -23,6 +23,7 @@ use APP\oai\ojs\OAIDAO;
 use APP\section\Section;
 use APP\submission\Submission;
 use DOMDocument;
+use DOMException;
 use DOMNode;
 use DOMXPath;
 use HTMLPurifier;
@@ -182,6 +183,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
      * @param $section Section
      * @param $issue Issue
      * @param $allowedPrePublicationAccess bool
+     * @throws DOMException
      */
     protected function _mungeMetadata($doc, $journal, $article, $section, $issue, $allowedPrePublicationAccess = false)
     {
@@ -259,12 +261,29 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
 
         // Set the article URLs: Landing page
         $uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
-        $uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'view', [$article->getBestId()]));
+        $uriNode->setAttribute('xlink:href', $request->getDispatcher()->url(
+            $request,
+            Application::ROUTE_PAGE,
+            null,
+            'article',
+            'view',
+            [$article->getBestId()],
+            urlLocaleForPage: ''
+        ));
 
         // Set the article URLs: Galleys
         foreach ($publication->getData('galleys') as $galley) {
             $uriNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('self-uri'));
-            $uriNode->setAttribute('xlink:href', $request->url(null, 'article', 'download', [$article->getBestId(), $galley->getId(), $galley->getData('submissionFileId')]));
+            $uriNode->setAttribute('xlink:href', $request->getDispatcher()->url(
+                $request,
+                Application::ROUTE_PAGE,
+                null,
+                'article',
+                'download',
+                [$article->getBestId(), $galley->getId(), $galley->getData('submissionFileId')],
+                urlLocaleForPage: ''
+            ));
+
             if (!$galley->getData('urlRemote')) {
                 $uriNode->setAttribute('content-type', $galley->getFileType());
             }
