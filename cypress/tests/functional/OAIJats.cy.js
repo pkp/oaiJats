@@ -17,10 +17,6 @@ describe('OAI JATS plugin tests', function() {
 
 		cy.get('button[id="plugins-button"]').click();
 
-		// Find and enable the JATS Template plugin
-		cy.get('input[id^="select-cell-jatstemplateplugin-enabled"]').click();
-		cy.get('div:contains(\'The plugin "JATS Template Plugin" has been enabled.\')');
-
 		// Find and enable the OAI JATS plugin
 		cy.get('input[id^="select-cell-OAIMetadataFormatPlugin_JATS-enabled"]').click();
 		cy.get('div:contains(\'The plugin "JATS Metadata Format" has been enabled.\')');
