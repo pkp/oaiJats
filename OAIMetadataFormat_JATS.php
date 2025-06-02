@@ -34,7 +34,7 @@ use PKP\core\DataObject;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
 use PKP\i18n\LocaleConversion;
-use PKP\submission\Genre;
+use PKP\submission\genre\Genre;
 use PKP\submissionFile\SubmissionFile;
 use PKP\plugins\PluginRegistry;
 use PKP\plugins\Hook;
@@ -612,10 +612,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         }
 
         static $genres = [];
-        $genreDao = DAORegistry::getDAO('GenreDAO');
-        $genreId = $submissionFile->getData('genreId');
+        $genreId = (int) $submissionFile->getData('genreId');
         if (!isset($genres[$genreId])) {
-            $genres[$genreId] = $genreDao->getById($genreId);
+            $genres[$genreId] = Repo::genre()->get($genreId);
         }
         assert($genres[$genreId]);
         $genre = $genres[$genreId];
