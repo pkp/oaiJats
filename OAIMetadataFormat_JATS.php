@@ -400,7 +400,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             ControlledVocab::CONTROLLED_VOCAB_SUBMISSION_KEYWORD,
             Application::ASSOC_TYPE_PUBLICATION,
             $publication->getId(),
-            $journal->getSupportedLocales()
+            $journal->getSupportedSubmissionLocales()
         );
 
         foreach ($keywordVocabs as $locale => $keywords) {
