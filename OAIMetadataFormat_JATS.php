@@ -612,21 +612,19 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         }
 
         static $genres = [];
+        $genreId = $submissionFile->getData('genreId');
         $genreId = (int) $submissionFile->getData('genreId');
         if (!isset($genres[$genreId])) {
-            $genres[$genreId] = Repo::genre()->get($genreId);
+            $genres[$genreId] =  Repo::genre()->get($genreId);
         }
-        assert($genres[$genreId]);
-        $genre = $genres[$genreId];
-
-        // The genre doesn't look like a main submission document.
-        if ($genre->getCategory() != Genre::GENRE_CATEGORY_DOCUMENT) {
-            return false;
-        }
-        if ($genre->getDependent()) {
-            return false;
-        }
-        if ($genre->getSupplementary()) {
+        /** @var Genre|null $genre */
+        $genre = $genres[$genreId] ?? null;
+        if (
+            $genre === null
+            || $genre->category !== Genre::GENRE_CATEGORY_DOCUMENT
+            || $genre->dependent
+            || $genre->supplementary
+        ) {
             return false;
         }
 
