@@ -15,7 +15,7 @@
 	{rdelim});
 </script>
 
-<form class="pkp_form" id="oaiJatsSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="oaiMetadataFormats" plugin=$pluginName verb="settings" save=true}">
+<form class="pkp_form" id="oaiJatsSettingsForm" method="post" action="{url router=PKP\core\PKPApplication::ROUTE_COMPONENT op="manage" category="oaiMetadataFormats" plugin=$pluginName verb="settings" save=true}">
 	<div id="oaiJatsSettings">
 		<div id="description">{translate key="plugins.oaiMetadataFormats.oaiJats.description"}</div>
 		<h3>{translate key="plugins.oaiMetadataFormats.oaiJats.settings"}</h3>
