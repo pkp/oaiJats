@@ -16,9 +16,9 @@
 namespace APP\plugins\oaiMetadataFormats\oaiJats;
 
 use APP\facades\Repo;
+use APP\journal\Journal;
 use APP\core\Application;
 use APP\issue\IssueAction;
-use APP\journal\Journal;
 use APP\oai\ojs\OAIDAO;
 use APP\section\Section;
 use APP\submission\Submission;
@@ -30,7 +30,6 @@ use DOMXPath;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 use PKP\controlledVocab\ControlledVocab;
-use PKP\core\DataObject;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
 use PKP\i18n\LocaleConversion;
@@ -127,7 +126,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             $subscriptionRequired = $issueAction->subscriptionRequired($issue, $journal);
             $isSubscribedDomain = $issueAction->subscribedDomain(Application::get()->getRequest(), $journal, $issue->getId(), $article->getId());
             $allowedPrePublicationAccess = $issueAction->allowedIssuePrePublicationAccess($journal, $request->getUser());
-
             if ($subscriptionRequired && (!$allowedPrePublicationAccess && !$isSubscribedDomain)) {
                 $oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (unauthenticated access to JATS XML not allowed)');
                 exit();
@@ -429,9 +427,43 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             $purifier = new HTMLPurifier($config);
         }
 
-        foreach ($articleMetaNode->getElementsByTagName('abstract') as $abstractNode) {
-            $articleMetaNode->removeChild($abstractNode);
+        foreach (['abstract', 'trans-abstract'] as $tagName) {
+            foreach ($articleMetaNode->getElementsByTagName($tagName) as $abstractNode) {
+                $articleMetaNode->removeChild($abstractNode);
+            }
         }
+
+        if ($publication->getData('plainLanguageSummary')) { // Set the plain-language summary if exists
+            $plainLanguageNodes = $xpath->query('//article/front/article-meta/*[@abstract-type="plain-language-summary"]');
+            foreach ($plainLanguageNodes as $node) {
+                $articleMetaNode->removeChild($node);
+            }
+
+            foreach ((array) $publication->getData('plainLanguageSummary') as $locale => $plainLanguageSummary) {
+                if (empty($plainLanguageSummary)) {
+                    continue;
+                }
+                $sanitizedSummary = $purifier->purify($plainLanguageSummary);
+                if (trim($sanitizedSummary) === '') {
+                    continue;
+                }
+                if (strpos($sanitizedSummary, '<p>') === false) {
+                    $sanitizedSummary = "<p>$sanitizedSummary</p>";
+                }
+                $summaryDoc = new DOMDocument();
+                $isPrimary = $locale == $article->getData('locale');
+                $summaryDoc->loadXML(
+                    ($isPrimary ? '<abstract abstract-type="plain-language-summary">' : '<trans-abstract abstract-type="plain-language-summary">')
+                        . $sanitizedSummary
+                        . ($isPrimary ? '</abstract>' : '</trans-abstract>')
+                );
+                $abstractNode = $this->_addChildInOrder($articleMetaNode, $doc->importNode($summaryDoc->documentElement, true));
+                if (!$isPrimary) {
+                    $abstractNode->setAttribute('xml:lang', LocaleConversion::toBcp47($locale));
+                }
+            }
+        }
+        
         foreach ((array) $publication->getData('abstract') as $locale => $abstract) {
             if (empty($abstract)) {
                 continue;
@@ -447,6 +479,8 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
                 $abstractNode->setAttribute('xml:lang', LocaleConversion::toBcp47($locale));
             }
         }
+
+        
 
         // Set the journal-id[publisher-id]
         $match = $xpath->query("//article/front/journal-meta/journal-id[@journal-id-type='publisher']");
