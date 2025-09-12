@@ -22,13 +22,13 @@ use APP\journal\Journal;
 use APP\oai\ojs\OAIDAO;
 use APP\section\Section;
 use APP\submission\Submission;
+use APP\issue\Issue;
 use DOMDocument;
 use DOMException;
 use DOMNode;
 use DOMXPath;
 use HTMLPurifier;
 use HTMLPurifier_Config;
-use Issue;
 use PKP\controlledVocab\ControlledVocab;
 use PKP\core\DataObject;
 use PKP\oai\OAIMetadataFormat;
@@ -113,21 +113,25 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
     {
         /** @var OAIDAO $oaiDao */
         $oaiDao = DAORegistry::getDAO('OAIDAO');
-        $journal = $record->getData('journal');
-        $article = $record->getData('article');
-        $section = $record->getData('section');
-        $issue = $record->getData('issue');
+        $journal = $record->getData('journal'); /** @var Journal $journal */
+        $article = $record->getData('article'); /** @var Submission $article */
+        $section = $record->getData('section'); /** @var Section $section */
+        $issue = $record->getData('issue'); /** @var Issue|null $issue */
+        $allowedPrePublicationAccess = true;
+
+        $request = Application::get()->getRequest();
 
         // Check access
-        $request = Application::get()->getRequest();
-        $issueAction = new IssueAction();
-        $subscriptionRequired = $issueAction->subscriptionRequired($issue, $journal);
-        /* @var Issue $issue */
-        $isSubscribedDomain = $issueAction->subscribedDomain(Application::get()->getRequest(), $journal, $issue->getId(), $article->getId());
-        $allowedPrePublicationAccess = $issueAction->allowedIssuePrePublicationAccess($journal, $request->getUser());
-        if ($subscriptionRequired && (!$allowedPrePublicationAccess && !$isSubscribedDomain)) {
-            $oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (unauthenticated access to JATS XML not allowed)');
-            exit();
+        if ($issue) {
+            $issueAction = new IssueAction();
+            $subscriptionRequired = $issueAction->subscriptionRequired($issue, $journal);
+            $isSubscribedDomain = $issueAction->subscribedDomain(Application::get()->getRequest(), $journal, $issue->getId(), $article->getId());
+            $allowedPrePublicationAccess = $issueAction->allowedIssuePrePublicationAccess($journal, $request->getUser());
+
+            if ($subscriptionRequired && (!$allowedPrePublicationAccess && !$isSubscribedDomain)) {
+                $oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (unauthenticated access to JATS XML not allowed)');
+                exit();
+            }
         }
 
         $doc = $this->findJats($record);
@@ -523,34 +527,37 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             $subjectNode->appendChild($doc->createTextNode($title));
         }
 
-        // Article sequence information
-        foreach (['volume', 'issue'] as $nodeName) {
-            $match = $xpath->query("//article/front/article-meta/$nodeName");
-            if ($match->length) {
-                $match->item(0)->setAttribute('seq', ((int) $publication->getData('seq')) + 1);
-                break;
+        // Issue related
+        if ($issue) {
+            // Article sequence information
+            foreach (['volume', 'issue'] as $nodeName) {
+                $match = $xpath->query("//article/front/article-meta/$nodeName");
+                if ($match->length) {
+                    $match->item(0)->setAttribute('seq', ((int) $publication->getData('seq')) + 1);
+                    break;
+                }
             }
-        }
 
-        // Issue ID
-        $match = $xpath->query("//article/front/article-meta/issue-id");
-        if ($match->length) {
-            $match->item(0)->appendChild($doc->createTextNode($issue->getId()));
-        } else {
-            $issueIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-id'));
-            $issueIdNode->appendChild($doc->createTextNode($issue->getId()));
-        }
+            // Issue ID
+            $match = $xpath->query("//article/front/article-meta/issue-id");
+            if ($match->length) {
+                $match->item(0)->appendChild($doc->createTextNode($issue->getId()));
+            } else {
+                $issueIdNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('issue-id'));
+                $issueIdNode->appendChild($doc->createTextNode($issue->getId()));
+            }
 
-        // Issue cover page
-        if ($coverUrl = $issue->getLocalizedCoverImageUrl()) {
-            $customMetaGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('custom-meta-group'));
-            $customMetaNode = $customMetaGroupNode->appendChild($doc->createElement('custom-meta'));
-            $metaNameNode = $customMetaNode->appendChild($doc->createElement('meta-name'));
-            $metaNameNode->appendChild($doc->createTextNode('issue-cover'));
-            $metaValueNode = $customMetaNode->appendChild($doc->createElement('meta-value'));
-            $inlineGraphicNode = $metaValueNode->appendChild($doc->createElement('inline-graphic'));
-            $inlineGraphicNode->setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
-            $inlineGraphicNode->setAttribute('xlink:href', $coverUrl);
+            // Issue cover page
+            if ($coverUrl = $issue->getLocalizedCoverImageUrl()) {
+                $customMetaGroupNode = $this->_addChildInOrder($articleMetaNode, $doc->createElement('custom-meta-group'));
+                $customMetaNode = $customMetaGroupNode->appendChild($doc->createElement('custom-meta'));
+                $metaNameNode = $customMetaNode->appendChild($doc->createElement('meta-name'));
+                $metaNameNode->appendChild($doc->createTextNode('issue-cover'));
+                $metaValueNode = $customMetaNode->appendChild($doc->createElement('meta-value'));
+                $inlineGraphicNode = $metaValueNode->appendChild($doc->createElement('inline-graphic'));
+                $inlineGraphicNode->setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+                $inlineGraphicNode->setAttribute('xlink:href', $coverUrl);
+            }
         }
 
         // Article type
