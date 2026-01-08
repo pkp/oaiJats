@@ -32,7 +32,7 @@ use PKP\oai\OAIMetadataFormat;
 use PKP\oai\OAIRecord;
 use PKP\plugins\Hook;
 use PKP\plugins\PluginRegistry;
-use PKP\submission\Genre;
+use PKP\submission\genre\Genre;
 use PKP\submissionFile\SubmissionFile;
 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat
@@ -386,22 +386,19 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         }
 
         static $genres = [];
-        $genreDao = DAORegistry::getDAO('GenreDAO'); /** @var \PKP\submission\GenreDAO $genreDao */
         $genreId = $submissionFile->getData('genreId');
+        $genreId = (int) $submissionFile->getData('genreId');
         if (!isset($genres[$genreId])) {
-            $genres[$genreId] = $genreDao->getById($genreId);
+            $genres[$genreId] = Genre::findById((int) $genreId);
         }
-        assert($genres[$genreId]);
-        $genre = $genres[$genreId]; /** @var \PKP\submission\Genre $genre */
-
-        // The genre doesn't look like a main submission document.
-        if ($genre->getCategory() != Genre::GENRE_CATEGORY_DOCUMENT) {
-            return false;
-        }
-        if ($genre->getDependent()) {
-            return false;
-        }
-        if ($genre->getSupplementary()) {
+        /** @var Genre|null $genre */
+        $genre = $genres[$genreId] ?? null;
+        if (
+            $genre === null
+            || $genre->category !== Genre::GENRE_CATEGORY_DOCUMENT
+            || $genre->dependent
+            || $genre->supplementary
+        ) {
             return false;
         }
 
