@@ -32,7 +32,7 @@ use PKP\oai\OAIMetadataFormat;
 use PKP\oai\OAIRecord;
 use PKP\plugins\Hook;
 use PKP\plugins\PluginRegistry;
-use PKP\submission\Genre;
+use PKP\submission\genre\Genre;
 use PKP\submissionFile\SubmissionFile;
 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat
@@ -389,7 +389,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         $genreId = $submissionFile->getData('genreId');
         $genreId = (int) $submissionFile->getData('genreId');
         if (!isset($genres[$genreId])) {
-            $genres[$genreId] =  Repo::genre()->get($genreId);
+            $genres[$genreId] = Genre::findById((int) $genreId);
         }
         /** @var Genre|null $genre */
         $genre = $genres[$genreId] ?? null;
