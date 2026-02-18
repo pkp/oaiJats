@@ -11,10 +11,10 @@ sudo apt-get install python3-lxml xmlstarlet
 pip install lxml
 
 echo "Run cypress tests"
-npx cypress run  --config '{"specPattern":["plugins/oaiMetadataFormats/oaiJats/cypress/tests/functional/*.cy.js"]}'
+npx cypress run --config '{"specPattern":["plugins/oaiMetadataFormats/oaiJats/cypress/tests/functional/*.cy.js"]}'
 
-wget -q -O - "http://localhost/index.php/publicknowledge/oai?verb=ListRecords&metadataPrefix=jats" | xmlstarlet sel -N x="https://jats.nlm.nih.gov/publishing/1.1/" -t -c "(//x:article)[1]" > jats.xml
+wget -q -O - "http://localhost/index.php/publicknowledge/oai?verb=ListRecords&metadataPrefix=jats" | xmlstarlet sel -N x="https://jats.nlm.nih.gov/publishing/1.2/" -t -c "(//x:article)[1]" > jats.xml
 wget -q "https://eruditps.docs.erudit.org/_downloads/f0f9fb861e01a47df2ce48f588524d29/erudit-style-0.3.sch"
 
-echo "Validate  against erudit-style"
+echo "Validate against erudit-style"
 python3 plugins/oaiMetadataFormats/oaiJats/validate.py jats.xml erudit-style-0.3.sch
