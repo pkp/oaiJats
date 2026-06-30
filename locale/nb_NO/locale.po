@@ -1,7 +1,8 @@
+# Eirik Hanssen <eirikh@oslomet.no>, 2026.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-01-26 11:53+0000\n"
-"Last-Translator: Tormod Strømme <tormod.stromme@uib.no>\n"
+"PO-Revision-Date: 2026-04-21 14:09+0000\n"
+"Last-Translator: Eirik Hanssen <eirikh@oslomet.no>\n"
 "Language-Team: Norwegian Bokmål <http://translate.pkp.sfu.ca/projects/"
 "plugins/oai-jats-plugin/nb_NO/>\n"
 "Language: nb_NO\n"
@@ -9,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9.1\n"
+"X-Generator: Weblate 4.18.2\n"
 
 msgid "plugins.oaiMetadata.jats.description"
 msgstr ""
@@ -18,3 +19,16 @@ msgstr ""
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "JATS metadataformat"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Dette programtillegget leverer metadata til eksterne tjenester i JATS XML-"
+"formatet via OAI-PMP grensesnittet. Når det brukes sammen med JATS Template-"
+"programtillegg kan det fungere selv om JATS XML-dokumenter ikke har blitt "
+"lastet opp i OJS."
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Innstillinger"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Ignorer opplastede JATS XML-dokumenter"
