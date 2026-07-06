@@ -1,15 +1,16 @@
+# Theodoros Theodoropoulos <bujam1@yahoo.com>, 2026.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-07-21 12:28+0000\n"
-"Last-Translator: Manolis Saldaris <omanos@gmail.com>\n"
+"PO-Revision-Date: 2026-07-06 12:25+0000\n"
+"Last-Translator: Theodoros Theodoropoulos <bujam1@yahoo.com>\n"
 "Language-Team: Greek <http://translate.pkp.sfu.ca/projects/plugins/"
-"oai-jats-plugin/el_GR/>\n"
-"Language: el_GR\n"
+"oai-jats-plugin/el/>\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9.1\n"
+"X-Generator: Weblate 4.18.2\n"
 
 msgid "plugins.oaiMetadata.jats.description"
 msgstr ""
@@ -18,3 +19,16 @@ msgstr ""
 
 msgid "plugins.oaiMetadata.jats.displayName"
 msgstr "Μορφή μεταδεδομένων JATS"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.settings"
+msgstr "Ρυθμίσεις"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.forceJatsTemplate"
+msgstr "Παράβλεψη των εγγράφων JATS XML που έχουν μεταφορτωθεί"
+
+msgid "plugins.oaiMetadataFormats.oaiJats.description"
+msgstr ""
+"Αυτό το πρόσθετο παρέχει μεταδεδομένα σε εξωτερικές υπηρεσίες σε μορφή JATS "
+"XML μέσω της διεπαφής OAI-PMH. Όταν χρησιμοποιείται σε συνδυασμό με το "
+"πρόσθετο JATS Template, μπορεί να λειτουργήσει ακόμη και αν τα έγγραφα JATS "
+"XML δεν έχουν μεταφορτωθεί στο OJS."
