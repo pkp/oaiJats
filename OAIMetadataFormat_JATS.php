@@ -169,16 +169,16 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
         $article = $record->getData('article'); /** @var Submission $article */
         $section = $record->getData('section'); /** @var Section $section */
         $issue = $record->getData('issue'); /** @var Issue|null $issue */
-        $allowedPrePublicationAccess = true;
 
         $request = Application::get()->getRequest();
 
+        $issueAction = new IssueAction();
+        $allowedPrePublicationAccess = $issueAction->allowedIssuePrePublicationAccess($journal, $request->getUser());
+
         // Check access
         if ($issue) {
-            $issueAction = new IssueAction();
             $subscriptionRequired = $issueAction->subscriptionRequired($issue, $journal);
             $isSubscribedDomain = $issueAction->subscribedDomain($request, $journal, $issue->getId(), $article);
-            $allowedPrePublicationAccess = $issueAction->allowedIssuePrePublicationAccess($journal, $request->getUser());
             if ($subscriptionRequired && (!$allowedPrePublicationAccess && !$isSubscribedDomain)) {
                 $oaiDao->oai->error('cannotDisseminateFormat', 'Cannot disseminate format (unauthenticated access to JATS XML not allowed)');
                 exit();
@@ -368,9 +368,9 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
                 ->appendChild($doc->createTextNode($issueYear));
         }
 
-        // Remove author emails from public OAI export (OAI-specific requirement)
+        // Remove author emails from public OAI export (OAI-specific requirement).
         if (!$allowedPrePublicationAccess) {
-            $authorEmailNodes = $xpath->query('//article/front/article-meta/contrib-group/contrib/email');
+            $authorEmailNodes = $xpath->query('//email[parent::contrib or parent::corresp]');
             foreach ($authorEmailNodes as $node) {
                 $node->parentNode->removeChild($node);
             }
