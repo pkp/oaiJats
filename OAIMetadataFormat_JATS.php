@@ -3,8 +3,8 @@
 /**
  * @file OAIMetadataFormat_JATS.php
  *
- * Copyright (c) 2013-2025 Simon Fraser University
- * Copyright (c) 2003-2025 John Willinsky
+ * Copyright (c) 2013-2026 Simon Fraser University
+ * Copyright (c) 2003-2026 John Willinsky
  * Distributed under the GNU GPL v3. For full terms see the file LICENSE.
  *
  * @class OAIMetadataFormat_JATS
@@ -29,7 +29,6 @@ use DOMXPath;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 use Issue;
-use PKP\controlledVocab\ControlledVocab;
 use PKP\core\DataObject;
 use PKP\oai\OAIMetadataFormat;
 use PKP\db\DAORegistry;
@@ -38,7 +37,6 @@ use PKP\submission\Genre;
 use PKP\submissionFile\SubmissionFile;
 use PKP\plugins\PluginRegistry;
 use PKP\plugins\Hook;
-use PKP\userGroup\UserGroup;
 
 class OAIMetadataFormat_JATS extends OAIMetadataFormat
 {
@@ -402,7 +400,7 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
                                 fn(array $items): array => collect($items)
                                     ->pluck("name")
                                 ->all()
-                                )
+                            )
                             ->all();
 
         foreach ($keywordVocabs as $locale => $keywords) {
@@ -560,39 +558,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
             $articleNode = $xpath->query("//article")->item(0);
             $articleNode->setAttribute('article-type', $articleType);
         }
-
-        // Editorial team
-        $userGroups = UserGroup::withContextIds([$journal->getId()])->get();
-        $journalMetaNode = $xpath->query('//article/front/journal-meta')->item(0);
-        $contribGroupNode = $this->_addChildInOrder($journalMetaNode, $doc->createElement('contrib-group'));
-        $keyContribTypeMapping = [
-            'default.groups.name.manager' => 'jmanager',
-            'default.groups.name.editor' => 'editor',
-            'default.groups.name.sectionEditor' => 'secteditor',
-        ];
-
-        $sitePrimaryLocale = $request->getSite()->getPrimaryLocale();
-
-        foreach ($userGroups as $userGroup) {
-            if (!isset($keyContribTypeMapping[$userGroup->nameLocaleKey])) {
-                continue;
-            }
-
-            $users = Repo::user()->getCollector()->filterByUserGroupIds([$userGroup->id])->getMany();
-            foreach ($users as $user) {
-                $contribNode = $contribGroupNode->appendChild($doc->createElement('contrib'));
-                $contribNode->setAttribute('contrib-type', $keyContribTypeMapping[$userGroup->nameLocaleKey]);
-                $nameNode = $contribNode->appendChild($doc->createElement('name'));
-
-                if ($user->getFamilyName($sitePrimaryLocale)) {
-                    $surnameNode = $nameNode->appendChild($doc->createElement('surname'));
-                    $surnameNode->appendChild($doc->createTextNode($user->getFamilyName($sitePrimaryLocale)));
-                }
-
-                $givenNamesNode = $nameNode->appendChild($doc->createElement('given-names'));
-                $givenNamesNode->appendChild($doc->createTextNode($user->getGivenName($sitePrimaryLocale)));
-            }
-        }
     }
 
     /**
@@ -651,8 +616,6 @@ class OAIMetadataFormat_JATS extends OAIMetadataFormat
      * @see https://jats.nlm.nih.gov/publishing/0.4/xsd/JATS-journalpublishing0.xsd
      *
      * @param string $htmlTitle The submission title/subtitle as in HTML
-     *
-     * @return string
      */
     public function mapHtmlTagsForTitle(string $htmlTitle): string
     {
